@@ -28,7 +28,7 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 80
+config['max_epochs'] = 70
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
@@ -39,7 +39,7 @@ config['decaying_lr'] = True
 
 file = open("resultados.txt", "w+")
 
-for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
+for patch_size in [15]:#[1,3,5,9,15,21,25,31]:
 
 
     print("Patch size:" + str(patch_size))

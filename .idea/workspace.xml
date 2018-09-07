@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Pavia_Input.py" line="17" mnemonic="7" />
+    <bookmark url="file://$PROJECT_DIR$/Pavia_Input.py" line="18" mnemonic="7" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1fe33cb5-96ce-4f6d-8f2e-3fdf0c6b6e6d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Decoder_DFC.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IndianPines_DFCTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IndianPines_Input_DFC.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/LandCover.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LandCover.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CNNModel_2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/CNNModel_2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CNNTrain_2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/CNNTrain_2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IndianPines_2DTests.py" beforeDir="false" afterPath="$PROJECT_DIR$/IndianPines_2DTests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IndianPines_DFCTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/IndianPines_DFCTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pavia_Input.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pavia_Input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test_Split.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test_Split.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ip.raw" beforeDir="false" afterPath="$PROJECT_DIR$/ip.raw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resultados.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resultados.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -59,7 +53,7 @@
     <session id="1671358501">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.opened" value="3" />
@@ -67,18 +61,18 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1037" />
-          <entry key="py" value="1359" />
+          <entry key="Python Console" value="1204" />
+          <entry key="py" value="1555" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="2396" />
+          <entry key="Python" value="2759" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="hdr" value="6" />
+          <entry key="hdr" value="7" />
           <entry key="py" value="31" />
           <entry key="raw" value="4" />
           <entry key="txt" value="4" />
@@ -86,7 +80,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="PLAIN_TEXT" value="14" />
+          <entry key="PLAIN_TEXT" value="15" />
           <entry key="Python" value="31" />
         </counts>
       </usages-collector>
@@ -97,8 +91,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/IndianPines_DFCTest.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="102" lean-forward="true" selection-start-line="102" selection-end-line="102" />
+            <state relative-caret-position="245">
+              <caret line="105" column="28" lean-forward="true" selection-start-line="105" selection-start-column="28" selection-end-line="105" selection-end-column="28" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
               </folding>
@@ -106,14 +100,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pavia_Input.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+            <state relative-caret-position="249">
+              <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
               <folding>
                 <element signature="e#1#32#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Data/IP_TraingSet/indianpines_ts_raw_classes.hdr">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="21" column="61" selection-start-line="21" selection-start-column="61" selection-end-line="21" selection-end-column="61" />
             </state>
           </provider>
         </entry>
@@ -144,12 +147,12 @@
         <option value="$PROJECT_DIR$/Decoder.py" />
         <option value="$PROJECT_DIR$/Decoder_DFC.py" />
         <option value="$PROJECT_DIR$/IndianPines_Input_DFC.py" />
-        <option value="$PROJECT_DIR$/IndianPines_DFCTest.py" />
         <option value="$PROJECT_DIR$/Pavia_Input.py" />
+        <option value="$PROJECT_DIR$/IndianPines_DFCTest.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="640" />
     <option name="y" value="28" />
     <option name="width" value="640" />
@@ -189,12 +192,6 @@
               <item name="cnn-landcover" type="b2602c69:ProjectViewProjectNode" />
               <item name="cnn-landcover" type="462c0819:PsiDirectoryNode" />
               <item name="Data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cnn-landcover" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cnn-landcover" type="462c0819:PsiDirectoryNode" />
-              <item name="Data" type="462c0819:PsiDirectoryNode" />
-              <item name="IP_TraingSet" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -458,13 +455,6 @@
         <state relative-caret-position="-90" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Data/IP_TraingSet/indianpines_ts_raw_classes.hdr">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="61" selection-start-line="21" selection-start-column="61" selection-end-line="21" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Test_Split.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -498,16 +488,6 @@
     <entry file="file://$PROJECT_DIR$/ip.raw">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/IndianPines_DFCTest.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="102" lean-forward="true" selection-start-line="102" selection-end-line="102" />
-          <folding>
-            <element signature="e#1#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/IndianPines_Input_DFC.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1161">
@@ -518,13 +498,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/IndianPines_DFCTest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="105" column="28" lean-forward="true" selection-start-line="105" selection-start-column="28" selection-end-line="105" selection-end-column="28" />
+          <folding>
+            <element signature="e#1#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Pavia_Input.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+        <state relative-caret-position="249">
+          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
           <folding>
             <element signature="e#1#32#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Data/IP_TraingSet/indianpines_ts_raw_classes.hdr">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="21" column="61" selection-start-line="21" selection-start-column="61" selection-end-line="21" selection-end-column="61" />
         </state>
       </provider>
     </entry>

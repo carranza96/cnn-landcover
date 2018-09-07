@@ -2,7 +2,7 @@ Size training set: 5689
 Size test set: 5689
 
 ------------------
-Results for patch size 9:
+Results for patch size 15:
 Class distribution:
 Train;Test
 0;762;762
@@ -21,5 +21,5 @@ Train;Test
 13;132;132
 14;291;291
 15;57;57
-Final test accuracy: 0.998
+Final test accuracy: 0.999
 Confusion matrix:
