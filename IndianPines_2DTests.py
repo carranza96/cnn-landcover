@@ -7,7 +7,6 @@ import time
 import numpy as np
 import Test_Split
 from collections import Counter
-from ConfusionMatrix import plot_confusion_matrix,print_cm,print_confusion_matrix
 import matplotlib.pyplot as plt
 
 
@@ -61,7 +60,8 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
     file.write("Size test set: %d\n" %len(X_test))
     print("Size training set", len(X_train))
     print("Size test set", len(X_test))
-
+    print(y_test.shape)
+    print(y_test)
 
     file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
 

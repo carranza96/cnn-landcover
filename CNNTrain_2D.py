@@ -20,6 +20,8 @@ def train_model(X_train,y_train,X_test,y_test,config):
     :return:
     """
     patch_size = config['patch_size']
+    in_channels = config['in_channels']
+    num_classes = config['num_classes']
     kernel_size = config['kernel_size']
     conv1_channels = config['conv1_channels']
     conv2_channels = config['conv2_channels']
@@ -41,12 +43,12 @@ def train_model(X_train,y_train,X_test,y_test,config):
         test_size = len(y_test)
 
         # Create placeholders
-        images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size)
+        images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size,in_channels)
 
         # Build a Graph that computes the logits predictions from the
         # inference model.
-        logits, keep_prob = CNNModel_2D.inference(images_pl, patch_size,
-                                                  kernel_size, conv1_channels, conv2_channels, fc1_units)
+        logits, keep_prob = CNNModel_2D.inference(images_pl, in_channels, patch_size,
+                                                  kernel_size, conv1_channels, conv2_channels, fc1_units,num_classes)
 
         # Calculate loss.
         loss = CNNModel_2D.loss(logits, labels_pl)

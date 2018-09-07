@@ -1,7 +1,7 @@
 import IndianPines_Input
 import numpy as np
 from random import shuffle,seed
-num_classes = IndianPines_Input.NUM_CLASSES
+num_classes = IndianPines_Input.IndianPines_Input().num_classes
 
 def train_test_split(X,y,num_folds=1):
     train_indices = []

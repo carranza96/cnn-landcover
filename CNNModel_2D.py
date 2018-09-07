@@ -5,7 +5,6 @@ from __future__ import print_function
 
 import tensorflow as tf
 import math
-import IndianPines_Input as input
 
 
 #sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
