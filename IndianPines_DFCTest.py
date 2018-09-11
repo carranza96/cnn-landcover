@@ -2,11 +2,8 @@
 import CNNTrain_2D
 import IndianPines_Input_DFC
 import Decoder_DFC
-import tensorflow as tf
 import time
-import numpy as np
 from collections import Counter
-#from ConfusionMatrix import plot_confusion_matrix,print_cm,print_confusion_matrix
 import matplotlib.pyplot as plt
 import spectral.io.envi as envi
 
@@ -28,7 +25,7 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 70
+config['max_epochs'] = 80
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
@@ -39,7 +36,8 @@ config['decaying_lr'] = True
 
 file = open("resultados.txt", "w+")
 
-for patch_size in [15]:#[1,3,5,9,15,21,25,31]:
+
+for patch_size in [21]:#[1,3,5,9,15,21,25,31]:
 
 
     print("Patch size:" + str(patch_size))
@@ -52,10 +50,9 @@ for patch_size in [15]:#[1,3,5,9,15,21,25,31]:
 
 
 
-
     print('Start training')
     a = time.time()
-    X_test,y_test = input.read_data(config['patch_size'])
+    X_test , y_test = input.read_data(config['patch_size'])
     print(y_test.shape)
 
     print(time.time() - a)
@@ -80,19 +77,7 @@ for patch_size in [15]:#[1,3,5,9,15,21,25,31]:
 
     print("Test accuracy: ",final_test_acc*100)
     file.write("Final test accuracy: %.3f" % final_test_acc + "\n" )
-    file.write("Confusion matrix:\n")
 
-
-    #.plot()
-    #conf_matrix.print_stats()
-
-    # plt.figure()
-    # plot_confusion_matrix(conf_matrix, classes=IndianPines_Input.CLASS_NAMES,
-    #                       title='Confusion matrix, without normalization')
-    # plt.show()
-    #
-    # print_cm(conf_matrix,IndianPines_Input.CLASS_NAMES)
-    # print_confusion_matrix(conf_matrix,IndianPines_Input.CLASS_NAMES)
 
     # Clear memory
     del X_train, X_test, y_train, y_test
@@ -100,10 +85,9 @@ for patch_size in [15]:#[1,3,5,9,15,21,25,31]:
 
 file.close()
 
-
 raw, accuracy = Decoder_DFC.decode(input,config, save_path)
 plt.imshow(raw)
-envi.save_image("ip.hdr",raw,dtype=int)
+envi.save_image("ip3.hdr",raw,dtype=int)
 
 
 

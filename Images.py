@@ -66,7 +66,7 @@ ts_gt = envi.open('Data/IP_TraingSet/indianpines_ts_raw_classes.hdr', 'Data/IP_T
 # plt.imshow(ts.load().read_band(10))
 
 
-outputmap = envi.open('ip.hdr', 'ip.raw')
+outputmap = envi.open('ip2.hdr', 'ip2.img')
 
 
 colores = np.asarray(ts_gt.metadata['class lookup'],dtype=int)

@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import spectral.io.envi as envi
 import matplotlib.pyplot as plt
+from collections import Counter
+
 
 
 
@@ -44,7 +46,7 @@ class IndianPines_Input():
 
 
     # Function for obtaining patches
-    def Patch(self,patch_size, i, j):
+    def Patch(self,patch_size, i, j,pad=False):
         """
         :param i: row index of center of the image patch
         :param j: column index of the center of the image patch
@@ -52,12 +54,15 @@ class IndianPines_Input():
         """
         # For every pixel we get 200(number of bands) mini-images (patches) of size 3x3,5x5,... (PATCH_SIZE)
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
+        if pad:
+            return self.padded_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
+        else:
+            return self.input_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
 
-        return self.padded_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
 
 
 
-    def read_data(self,patch_size,conv3d=False):
+    def read_data(self,patch_size,conv3d=False,oversampling=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -76,7 +81,6 @@ class IndianPines_Input():
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
         self.padded_data = np.pad(self.input_data,((dist_border,dist_border),(dist_border,dist_border),(0,0)),'edge')
-        plt.imshow(self.padded_data[:,:,10])
 
         # Collect patches of classified pixels
         patches = []
@@ -85,17 +89,29 @@ class IndianPines_Input():
 
         for i in range(self.height):
             for j in range(self.width):
-                patch = self.Patch(patch_size,i+dist_border, j+dist_border)
+                patch = self.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
                 label = self.target_data[i, j]
                 if label != 0:  # Ignore patches with unknown landcover type for the central pixel
                     patches.append(patch)
                     patches_labels.append(label - 1)
 
 
+        if oversampling:
+            class_distribution = Counter(patches_labels)
+            print(len(class_distribution))
+            print(class_distribution)
+            for i in range(len(class_distribution)):
+                num_elem = class_distribution[i]
+
+
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
         X = np.asarray(patches,dtype=float)
         y = np.asarray(patches_labels,dtype=int)
+
+
+
+
 
 
         # For 3D shape must be 5D Tensor
@@ -105,4 +121,4 @@ class IndianPines_Input():
             # [num_examples, in_depth, in_height, in_width] Need one more dimension
             X = np.expand_dims(X, axis=4)
 
-        return X,y
+        return X, y

@@ -2,7 +2,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import StratifiedShuffleSplit
 
 import CNNTrain_2D
-import IndianPines_Input
+import IndianPines_Input_DFC
 import time
 import numpy as np
 from collections import Counter
@@ -25,10 +25,16 @@ def make_hparam_string(patch_size,learning_rate, learning_rate_decay,fold_num):
     return "ps=%d,lr_%.0E,%s,f=%d" % (patch_size,learning_rate,lr_decay,fold_num)
 
 
+# Input data
+input = IndianPines_Input_DFC.IndianPines_Input()
+
+
 # Configurable parameters
 config = {}
 #config['patch_size'] = 15
 config['kernel_size'] = 3
+config['in_channels'] = input.bands
+config['num_classes'] = input.num_classes
 config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
@@ -46,11 +52,7 @@ config['log_dir'] = log_dir
 
 
 
-# Input data
-input = IndianPines_Input.IndianPines_Input()
-# Force input pipeline to CPU:0 to avoid operations sometimes ending up on
-# GPU and resulting in a slow down.
-# with tf.device('/cpu:0'):
+
 
 
 
@@ -58,7 +60,7 @@ input = IndianPines_Input.IndianPines_Input()
 file = open("cv.txt","w+")
 
 #[1,3,5,9,15,21,25,31]
-for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
+for patch_size in [21]:#[1,3,5,9,15,21,25,31]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -67,8 +69,8 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
 
 
     X, y = input.read_data(config['patch_size'])
-    folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=41)
-    #skfold = StratifiedShuffleSplit(n_splits=10, test_size=0.75, random_state=0)
+    #folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=13*27*i)
+    skfold = StratifiedShuffleSplit(n_splits=1, test_size=0.5, random_state=37)
     #folds = Test_Split.train_test_split(X,y)
 
     file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
@@ -77,7 +79,7 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
     accuracies = []
     final_test_acc = 0
 
-    for train_index, test_index in folds:
+    for train_index, test_index in skfold.split(X,y):
 
         config['log_dir'] = log_dir + make_hparam_string(config['patch_size'],config['initial_learning_rate'],config['decaying_lr'],fold_num)
         print('Start training')
@@ -85,6 +87,7 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
         X_train, X_test = np.take(X,train_index,axis=0), np.take(X,test_index,axis=0)
         print(time.time() - a)
         y_train, y_test = np.take(y,train_index,axis=0), np.take(y,test_index,axis=0)
+
         print("Size training set", len(X_train))
         print("Size test set", len(X_test))
 
@@ -95,15 +98,17 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
             file.write("Train;Test\n")
             dtrain = Counter(y_train)
             dtest = Counter(y_test)
-            for i in range(IndianPines_Input.NUM_CLASSES):
+            for i in range(input.num_classes):
                 file.write(str(i)+";"+ str(dtrain[i]) + ";" + str(dtest[i]) + "\n")
 
-        save_path,final_test_acc,conf_matrix = CNNTrain_2D.train_model(X_train, y_train, X_test, y_test, config)
+        save_path, final_test_acc, conf_matrix = CNNTrain_2D.train_model(X_train, y_train, X_test, y_test, config)
 
         print(final_test_acc)
         accuracies.append(final_test_acc)
-        file.write("Fold "+ str(fold_num) + ";" + "%.3f" % final_test_acc + "\n"  )
+        file.write("Fold "+ str(fold_num) + ";" + "%.3f" % final_test_acc + "\n")
 
+        conf_matrix.plot()
+        conf_matrix.print_stats()
 
         # Clear memory
         del X_train, X_test, y_train, y_test
@@ -117,7 +122,7 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
 
 
 
-file.close()
+    file.close()
 
 
 

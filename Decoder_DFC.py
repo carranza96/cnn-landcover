@@ -1,6 +1,27 @@
 import tensorflow as tf
 import CNNModel_2D
 import numpy as np
+import IndianPines_Input_DFC
+import matplotlib.pyplot as plt
+import spectral.io.envi as envi
+
+# Input data
+input = IndianPines_Input_DFC.IndianPines_Input()
+
+config = {}
+config['patch_size'] = 21
+config['kernel_size'] = 3
+config['conv1_channels'] = 32
+config['conv2_channels'] = 64
+config['fc1_units'] = 1024
+config['batch_size'] = 16
+config['max_epochs'] = 10
+config['train_dropout'] = 0.5
+config['initial_learning_rate'] = 0.01
+config['decaying_lr'] = True
+
+input.read_data(config['patch_size'])
+
 
 
 def decode(input,config,model_ckp):
@@ -42,7 +63,7 @@ def decode(input,config,model_ckp):
         for j in range(input.width):
             label = input.target_data[i, j]
 
-            patch = input.Patch(patch_size, i+dist_border, j+dist_border)
+            patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
             patch = np.expand_dims(patch, axis=0) # Shape [-1,patch_size,patch_size,in_channels]
             predictions = sess.run(softmax, feed_dict={images_pl: patch,keep_prob:1})
             y_ = np.argmax(predictions) + 1
@@ -58,3 +79,9 @@ def decode(input,config,model_ckp):
 
 
     return predicted_image,accuracy
+
+
+#
+raw, accuracy = decode(input,config, 'cv21/ps=21,lr_1E-02,lr_d=Y,f=1-model-21.ckpt')
+plt.imshow(raw)
+envi.save_image("ip2.hdr",raw,dtype=int)

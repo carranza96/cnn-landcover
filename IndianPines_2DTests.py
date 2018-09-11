@@ -92,6 +92,8 @@ for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
     # print_cm(conf_matrix,IndianPines_Input.CLASS_NAMES)
     # print_confusion_matrix(conf_matrix,IndianPines_Input.CLASS_NAMES)
 
+
+
     # Clear memory
     del X_train, X_test, y_train, y_test
 
