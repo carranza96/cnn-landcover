@@ -3,7 +3,7 @@ import time
 import tensorflow as tf
 
 import CNNModel_2D
-import DataBuffer
+from DataBuffer import *
 import math
 #from sklearn.metrics import confusion_matrix
 from pandas_ml import ConfusionMatrix
@@ -74,7 +74,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
         train_step = CNNModel_2D.training(loss, learning_rate, global_step)
 
         # Add the Op to compare the logits to the labels during evaluation.
-        predictions,correct_predictions,accuracy = CNNModel_2D.evaluation(logits, labels_pl)
+        predictions, correct_predictions, accuracy = CNNModel_2D.evaluation(logits, labels_pl)
 
 
         # Add the variable initializer Op.
@@ -91,7 +91,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
 
         # Create DataBuffer for managing batches of train set
-        data_buffer = DataBuffer.DataBuffer(images=X_train, labels=y_train, batch_size=batch_size)
+        data_buffer = DataBuffer(images=X_train, labels=y_train, batch_size=batch_size)
 
 
 
@@ -119,7 +119,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
         # Code for testing the test set in batches (normally too large)
         test_batch_size = 1000
-        test_data_buffer = DataBuffer.DataBuffer(images=X_test, labels=y_test, batch_size=test_batch_size)
+        test_data_buffer = DataBuffer(images=X_test, labels=y_test, batch_size=test_batch_size)
         test_batch_num = int(math.ceil(len(y_test) / test_batch_size))
         test_eval_freq = 10
 
@@ -200,7 +200,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
 
         # Final evaluation of the test set
-        final_test_accuracy,conf_matrix = eval_test_set(step,conf_matrix=True)
+        final_test_accuracy, conf_matrix = eval_test_set(step,conf_matrix=True)
 
 
 
@@ -210,4 +210,4 @@ def train_model(X_train,y_train,X_test,y_test,config):
         train_writer.close()
         test_writer.close()
         save_path = saver.save(sess, log_dir + '-model-' + str(patch_size) + '.ckpt')
-        return save_path,final_test_accuracy,conf_matrix
+        return save_path, final_test_accuracy, conf_matrix

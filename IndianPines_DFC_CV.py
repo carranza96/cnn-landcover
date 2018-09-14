@@ -1,4 +1,3 @@
-from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import StratifiedShuffleSplit
 
 import CNNTrain_2D

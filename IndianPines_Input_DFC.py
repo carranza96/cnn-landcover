@@ -1,15 +1,9 @@
-import scipy.io
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import spectral.io.envi as envi
-import matplotlib.pyplot as plt
 from collections import Counter
-
-
-
-
-
-"""Routine for reading the Indian Pines dataset provided in .mat file."""
+import scipy.io
+from spectral import ColorScale
 
 
 
@@ -17,36 +11,83 @@ class IndianPines_Input():
 
     def __init__(self):
 
-        self.input_channels = 220
-        self.num_classes = 16
-        self.class_names = ["Brocoli_green_weeds_1","Brocoli_green_weeds_2","Fallow","Fallow_rough_plow",
-        "Fallow_smooth","Stubble","Celery","Grapes_untrained","Soil_vinyard_develop",
-        "Corn_senesced_green_weeds","Lettuce_romaine_4wk","Lettuce_romaine_5wk",
-        "Lettuce_romaine_6wk","Lettuce_romaine_7wk","Vinyard_untrained","Vinyard_vertical_trellis"]
-        
         # Load dataset
-        ts = envi.open('Data/IP_DataSet/indianpines_ds_raw.hdr', 'Data/IP_DataSet/indianpines_ds_raw.raw')
-        ts_gt = envi.open('Data/IP_TraingSet/indianpines_ts_raw_classes.hdr', 'Data/IP_TraingSet/indianpines_ts_raw_classes.raw')
-
-
-        self.input_data = ts.load()
-        self.target_data = ts_gt.load().squeeze()
-        print("Items",np.count_nonzero(self.target_data))
-        self.padded_data = self.input_data
-
-
+        trainingset = envi.open('Data/IP_DataSet/indianpines_ds_raw.hdr', 'Data/IP_DataSet/indianpines_ds_raw.raw')
+        trainingset_gt = envi.open('Data/IP_TraingSet/indianpines_ts_raw_classes.hdr', 'Data/IP_TraingSet/indianpines_ts_raw_classes.raw')
 
         # Dataset variables
         # Input data shape: (145,145,200)
-        self.height = self.input_data.shape[0]
-        self.width = self.input_data.shape[1]
-        self.bands = self.input_data.shape[2]
+        self.height = trainingset.nrows
+        self.width = trainingset.ncols
+        self.bands = trainingset.nbands
         self.num_pixels = self.height * self.width
+
+        self.num_classes = int(trainingset_gt.metadata['classes']) - 1
+        self.class_names = trainingset_gt.metadata['class names'][1:]
+
+        # Complete ground truth
+        self.complete_gt = self.convert_gt(scipy.io.loadmat("Data/Indian_pines_gt.mat")['indian_pines_gt'])
+        print("Classified pixels", np.count_nonzero(self.complete_gt))
+
+        # Obtain train data
+        self.input_data = trainingset.load()
+        self.train_data = trainingset_gt.load().squeeze()
+        self.padded_data = self.input_data
+        print("Training pixels", np.count_nonzero(self.train_data))
+
+
+
+        # Obtain test data by comparing training set to comlete ground truth
+        self.test_data = self.get_test_data()
+        print("Test pixels", np.count_nonzero(self.test_data))
+
+
+        # Store number of pixels training/test
+        self.classified_pixels = np.count_nonzero(self.complete_gt)
+        self.train_pixels = np.count_nonzero(self.train_data)
+        self.test_pixels = np.count_nonzero(self.test_data)
+
+        # Color scale to display image
+        class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
+        class_colors = class_colors.reshape((int(class_colors.size/3), 3))
+
+        self.color_scale = ColorScale([x for x in range(class_colors.shape[0])], class_colors)
+
+
+
+
+
+    # Convert complete ground truth data to have same class code as in training gt image
+    def convert_gt(self, gt):
+        gt_converter = {0: 0, 1: 10, 2: 1, 3: 2, 4: 11, 5: 3, 6: 4, 7: 12, 8: 5, 9: 13, 10: 6, 11: 7, 12: 8, 13: 14,
+                        14: 9, 15: 15, 16: 16}
+
+        gt_converted = np.zeros(shape=(self.height, self.width))
+
+        for i in range(self.height):
+            for j in range(self.width):
+                gt_converted[i][j] = gt_converter[gt[i][j]]
+
+        return gt_converted
+
+
+    # Create test data ground truth image by comparing the complete gt to the training set gt
+    def get_test_data(self):
+        test_data = np.zeros(shape=(self.height, self.width))
+
+        for i in range(self.height):
+            for j in range(self.width):
+                real_class = self.complete_gt[i][j]
+                is_training = self.train_data[i][j] != 0
+                if real_class != 0 and not is_training:
+                    test_data[i][j] = self.complete_gt[i][j]
+
+        return test_data
 
 
 
     # Function for obtaining patches
-    def Patch(self,patch_size, i, j,pad=False):
+    def Patch(self, patch_size, i, j, pad=False):
         """
         :param i: row index of center of the image patch
         :param j: column index of the center of the image patch
@@ -61,13 +102,12 @@ class IndianPines_Input():
 
 
 
-
-    def read_data(self,patch_size,conv3d=False,oversampling=False):
+    # Read patches
+    def read_data(self, patch_size, conv3d=False, oversampling=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
         """
-
 
         # Normalize input using MinMaxScaler (values between 0 and 1)
         scaler = MinMaxScaler()
@@ -80,45 +120,47 @@ class IndianPines_Input():
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
-        self.padded_data = np.pad(self.input_data,((dist_border,dist_border),(dist_border,dist_border),(0,0)),'edge')
+        # Pad data to deal with border pixels
+        self.padded_data = np.pad(self.input_data, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
 
         # Collect patches of classified pixels
-        patches = []
-        patches_labels = []
-
+        train_patches, test_patches = [], []
+        train_labels, test_labels = [], []
 
         for i in range(self.height):
             for j in range(self.width):
-                patch = self.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
-                label = self.target_data[i, j]
-                if label != 0:  # Ignore patches with unknown landcover type for the central pixel
-                    patches.append(patch)
-                    patches_labels.append(label - 1)
+                label = self.complete_gt[i, j]
+                if label != 0:
+                    patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
+                    is_train = self.train_data[i, j] != 0
+                    if is_train:
+                        train_patches.append(patch)
+                        train_labels.append(label - 1)
+                    else:
+                        test_patches.append(patch)
+                        test_labels.append(label - 1)
 
 
-        if oversampling:
-            class_distribution = Counter(patches_labels)
-            print(len(class_distribution))
-            print(class_distribution)
-            for i in range(len(class_distribution)):
-                num_elem = class_distribution[i]
+        # if oversampling:
+        #     class_distribution = Counter(patches_labels)
+        #     print(len(class_distribution))
+        #     print(class_distribution)
+        #     for i in range(len(class_distribution)):
+        #         num_elem = class_distribution[i]
 
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X = np.asarray(patches,dtype=float)
-        y = np.asarray(patches_labels,dtype=int)
-
-
-
+        X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
+        y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
 
 
 
         # For 3D shape must be 5D Tensor
         # [num_examples, in_depth, in_height, in_width, in_channels(1)]
         if conv3d:
-            X = np.transpose(X, axes=(0, 3, 1, 2))
+            X_train, X_test = np.transpose(X_train, axes=(0, 3, 1, 2)), np.transpose(X_test, axes=(0, 3, 1, 2))
             # [num_examples, in_depth, in_height, in_width] Need one more dimension
-            X = np.expand_dims(X, axis=4)
+            X_train, X_test = np.expand_dims(X_train, axis=4), np.expand_dims(X_test, axis=4)
 
-        return X, y
+        return X_train, y_train, X_test, y_test

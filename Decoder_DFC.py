@@ -36,7 +36,7 @@ def decode(input,config,model_ckp):
     #with tf.Graph().as_default():
 
     # Create placeholders
-    images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size,input.input_channels)
+    images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size, input.input_channels)
 
     # Build a Graph that computes the logits predictions from the
     # inference model.
@@ -53,8 +53,7 @@ def decode(input,config,model_ckp):
 
     saver.restore(sess, model_ckp)
 
-
-    predicted_image = np.zeros(shape=(input.height,input.width))
+    predicted_image = np.zeros(shape=(input.height, input.width))
     correct_pixels = []
 
     dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
@@ -64,24 +63,22 @@ def decode(input,config,model_ckp):
             label = input.target_data[i, j]
 
             patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
-            patch = np.expand_dims(patch, axis=0) # Shape [-1,patch_size,patch_size,in_channels]
-            predictions = sess.run(softmax, feed_dict={images_pl: patch,keep_prob:1})
+            patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
+            predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1})
             y_ = np.argmax(predictions) + 1
             predicted_image[i][j] = y_
 
-            if label==y_:
+            if label == y_:
                 correct_pixels.append(1)
             else:
                 correct_pixels.append(0)
 
-
     accuracy = np.asarray(correct_pixels).mean()*100
 
+    return predicted_image, accuracy
 
-    return predicted_image,accuracy
 
 
-#
-raw, accuracy = decode(input,config, 'cv21/ps=21,lr_1E-02,lr_d=Y,f=1-model-21.ckpt')
-plt.imshow(raw)
-envi.save_image("ip2.hdr",raw,dtype=int)
+# raw, accuracy = decode(input,config, 'cv21/ps=21,lr_1E-02,lr_d=Y,f=1-model-21.ckpt')
+# plt.imshow(raw)
+# envi.save_image("ip2.hdr",raw,dtype=int)
