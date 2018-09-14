@@ -27,19 +27,16 @@ class IndianPines_Input():
 
         # Complete ground truth
         self.complete_gt = self.convert_gt(scipy.io.loadmat("Data/Indian_pines_gt.mat")['indian_pines_gt'])
-        print("Classified pixels", np.count_nonzero(self.complete_gt))
 
         # Obtain train data
         self.input_data = trainingset.load()
         self.train_data = trainingset_gt.load().squeeze()
         self.padded_data = self.input_data
-        print("Training pixels", np.count_nonzero(self.train_data))
 
 
 
         # Obtain test data by comparing training set to comlete ground truth
         self.test_data = self.get_test_data()
-        print("Test pixels", np.count_nonzero(self.test_data))
 
 
         # Store number of pixels training/test
