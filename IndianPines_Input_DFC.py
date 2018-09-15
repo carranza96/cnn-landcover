@@ -4,8 +4,8 @@ import spectral.io.envi as envi
 from collections import Counter
 import scipy.io
 from spectral import ColorScale
-
-
+from imblearn.over_sampling import RandomOverSampler,SMOTE
+from imblearn.combine import SMOTEENN
 
 class IndianPines_Input():
 
@@ -40,7 +40,6 @@ class IndianPines_Input():
 
 
         # Store number of pixels training/test
-        self.classified_pixels = np.count_nonzero(self.complete_gt)
         self.train_pixels = np.count_nonzero(self.train_data)
         self.test_pixels = np.count_nonzero(self.test_data)
 
@@ -126,24 +125,20 @@ class IndianPines_Input():
 
         for i in range(self.height):
             for j in range(self.width):
-                label = self.complete_gt[i, j]
-                if label != 0:
+                is_train = self.train_data[i, j] != 0
+                is_test = self.test_data[i, j] != 0
+
+                if is_train:
                     patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
-                    is_train = self.train_data[i, j] != 0
-                    if is_train:
-                        train_patches.append(patch)
-                        train_labels.append(label - 1)
-                    else:
-                        test_patches.append(patch)
-                        test_labels.append(label - 1)
+                    label = self.train_data[i, j]
+                    train_patches.append(patch)
+                    train_labels.append(label - 1)
 
-
-        # if oversampling:
-        #     class_distribution = Counter(patches_labels)
-        #     print(len(class_distribution))
-        #     print(class_distribution)
-        #     for i in range(len(class_distribution)):
-        #         num_elem = class_distribution[i]
+                elif is_test:
+                    patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
+                    label = self.test_data[i, j]
+                    test_patches.append(patch)
+                    test_labels.append(label - 1)
 
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
@@ -151,6 +146,11 @@ class IndianPines_Input():
         X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
         y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
 
+        if oversampling:
+            ros = SMOTE(random_state=41)
+            X_train, y_train = ros.fit_sample(X_train.reshape(len(X_train), patch_size * patch_size * self.bands), y_train)
+            X_train = X_train.reshape(len(X_train), patch_size, patch_size, self.bands)
+            print('Resampled dataset shape {}'.format(Counter(y_train)))
 
 
         # For 3D shape must be 5D Tensor

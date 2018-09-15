@@ -3,7 +3,7 @@ import spectral.io.envi as envi
 import scipy.io
 import numpy as np
 import IndianPines_Input_DFC
-from spectral import imshow
+from spectral import imshow,get_rgb
 
 
 #mat = scipy.io.loadmat("Data/2008_ROSIS_Pavia.mat")
@@ -11,14 +11,14 @@ from spectral import imshow
 input = IndianPines_Input_DFC.IndianPines_Input()
 
 
-view = imshow(input.train_data, color_scale=input.color_scale)
-view = imshow(input.test_data, color_scale=input.color_scale)
+# view = imshow(input.train_data, color_scale=input.color_scale)
+# view = imshow(input.test_data, color_scale=input.color_scale)
 
 
-# view = imshow(input.train_data, color_scale=input.color_scale,classes=input.test_data)
-# view.set_display_mode('overlay')
-# view.class_alpha = 0.5
-#view = imshow(input.test_data, color_scale=input.color_scale)
+view = imshow(input.complete_gt, color_scale=input.color_scale, classes=input.train_data)
+view.set_display_mode('overlay')
+view.class_alpha = 0.4
+# view = imshow(input.test_data, color_scale=input.color_scale)
 
 
 
@@ -46,7 +46,7 @@ view = imshow(input.test_data, color_scale=input.color_scale)
 #
 #
 #
-# rgb_gt2 = get_rgb(ts_gt.load().read_band(0),color_scale=cs)
+rgb_gt2 = get_rgb(ts_gt.load().read_band(0),color_scale=cs)
 # rgb = get_rgb(outputmap,color_scale=cs)
 #
 #

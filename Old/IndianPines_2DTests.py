@@ -33,7 +33,7 @@ input = IndianPines_Input.IndianPines_Input()
 
 file = open("resultados.txt", "w+")
 
-for patch_size in [9]:#[1,3,5,9,15,21,25,31]:
+for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
 
 
     print("Patch size:" + str(patch_size))
