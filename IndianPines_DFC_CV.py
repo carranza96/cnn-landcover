@@ -80,12 +80,13 @@ for patch_size in [21]:#[1,3,5,9,15,21,25,31]:
 
     for train_index, test_index in skfold.split(X,y):
 
-        config['log_dir'] = log_dir + make_hparam_string(config['patch_size'],config['initial_learning_rate'],config['decaying_lr'],fold_num)
+        config['log_dir'] = log_dir + make_hparam_string(config['patch_size'], config['initial_learning_rate'],
+                                                         config['decaying_lr'], fold_num)
         print('Start training')
         a = time.time()
-        X_train, X_test = np.take(X,train_index,axis=0), np.take(X,test_index,axis=0)
+        X_train, X_test = np.take(X, train_index, axis=0), np.take(X, test_index, axis=0)
         print(time.time() - a)
-        y_train, y_test = np.take(y,train_index,axis=0), np.take(y,test_index,axis=0)
+        y_train, y_test = np.take(y, train_index, axis=0), np.take(y, test_index, axis=0)
 
         print("Size training set", len(X_train))
         print("Size test set", len(X_test))

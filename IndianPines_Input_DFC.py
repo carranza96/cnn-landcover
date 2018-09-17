@@ -99,7 +99,7 @@ class IndianPines_Input():
 
 
     # Read patches
-    def read_data(self, patch_size, conv3d=False, oversampling=False):
+    def read_data(self, patch_size, conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -146,12 +146,6 @@ class IndianPines_Input():
         X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
         y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
 
-        if oversampling:
-            ros = SMOTE(random_state=41)
-            X_train, y_train = ros.fit_sample(X_train.reshape(len(X_train), patch_size * patch_size * self.bands), y_train)
-            X_train = X_train.reshape(len(X_train), patch_size, patch_size, self.bands)
-            print('Resampled dataset shape {}'.format(Counter(y_train)))
-
 
         # For 3D shape must be 5D Tensor
         # [num_examples, in_depth, in_height, in_width, in_channels(1)]
@@ -161,3 +155,12 @@ class IndianPines_Input():
             X_train, X_test = np.expand_dims(X_train, axis=4), np.expand_dims(X_test, axis=4)
 
         return X_train, y_train, X_test, y_test
+
+
+
+    def oversample_data(self,X,y,patch_size):
+        ros = RandomOverSampler(random_state=41)
+        X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
+        X = X.reshape(len(X), patch_size, patch_size, self.bands)
+        print('Resampled dataset shape {}'.format(Counter(y)))
+        return X, y

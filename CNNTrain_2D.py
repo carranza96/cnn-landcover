@@ -200,7 +200,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
 
         # Final evaluation of the test set
-        final_test_accuracy, conf_matrix = eval_test_set(step,conf_matrix=True)
+        final_test_accuracy, conf_matrix = eval_test_set(step, conf_matrix=True)
 
 
 
@@ -210,4 +210,5 @@ def train_model(X_train,y_train,X_test,y_test,config):
         train_writer.close()
         test_writer.close()
         save_path = saver.save(sess, log_dir + '-model-' + str(patch_size) + '.ckpt')
-        return save_path, final_test_accuracy, conf_matrix
+        sess.close()
+        return save_path, final_test_accuracy*100, conf_matrix
