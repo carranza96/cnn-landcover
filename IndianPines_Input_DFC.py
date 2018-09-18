@@ -6,6 +6,8 @@ import scipy.io
 from spectral import ColorScale
 from imblearn.over_sampling import RandomOverSampler,SMOTE
 from imblearn.combine import SMOTEENN
+import math
+import tensorflow as tf
 
 class IndianPines_Input():
 
@@ -159,8 +161,33 @@ class IndianPines_Input():
 
 
     def oversample_data(self,X,y,patch_size):
-        ros = RandomOverSampler(random_state=41)
+        ros = SMOTE(random_state=41)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
         print('Resampled dataset shape {}'.format(Counter(y)))
         return X, y
+
+
+
+    def rotation_oversampling(self, X_train, y_train):
+
+        print("Rotating patches")
+
+        # Split to avoid out of mem error
+        X_split = np.split(X_train, [2000, 4000])
+        y_split = np.split(y_train, [2000, 4000])
+
+        for i in range(len(X_split)):
+            X = X_split[i]  # Your image or batch of images
+            y = y_split[i]
+            for degree_angle in [90, 180, 270]:
+                radian = degree_angle * math.pi / 180
+                tf_img = tf.contrib.image.rotate(X, radian)
+                with tf.Session() as sess:
+                    sess.run(tf.global_variables_initializer())
+                    rotated_img = sess.run(tf_img)
+                    sess.close()
+                X_train = np.append(X_train, rotated_img, axis=0)
+                y_train = np.append(y_train, y, axis=0)
+
+        return X_train, y_train

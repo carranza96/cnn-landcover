@@ -8,6 +8,9 @@ import spectral.io.envi as envi
 from spectral import imshow,save_rgb
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import tensorflow as tf
+import math
+
 
 def make_hparam_string(patch_size):
     return "ps%d" % patch_size
@@ -37,14 +40,19 @@ config['max_epochs'] = 80
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
-oversampling = True
+oversampling = False
+rotation_oversampling = True
 validation_set = False
+
+
+# for batch_size in [16, 32, 64]:
+#     file = open("resultados"+str(batch_size)+".txt", "w+")
+#     config['batch_size'] = batch_size
 
 
 file = open("resultados.txt", "w+")
 
-
-for patch_size in [5]:#[1,3,5,9,15,21,25,31]:
+for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
 
 
     print("Patch size:" + str(patch_size))
@@ -63,6 +71,10 @@ for patch_size in [5]:#[1,3,5,9,15,21,25,31]:
 
     if oversampling:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
+
+    if rotation_oversampling:
+        X_train, y_train = input.rotation_oversampling(X_train, y_train)
+
 
     print('Start training')
 
@@ -126,6 +138,9 @@ for patch_size in [5]:#[1,3,5,9,15,21,25,31]:
         file.write("Validation accuracy; %.3f" % val_acc + "\n")
     print("Test accuracy: ", test_acc)
     file.write("Test accuracy; %.3f" % test_acc + "\n")
+    conf_matrix.to_dataframe().to_csv("conf_matrix")
+    conf_matrix.classification_report.to_csv("classification_report")
+
 
 
     # Output image

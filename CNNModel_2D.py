@@ -20,7 +20,7 @@ def placeholder_inputs(patch_size,in_channels):
     x = tf.placeholder(tf.float32, shape=[None,patch_size, patch_size, in_channels],name='x')
     y_ = tf.placeholder(tf.int64, shape=[None],name='labels')
 
-    return x,y_
+    return x, y_
 
 
 
@@ -121,12 +121,12 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
 
 def weight_variable(shape):
   """weight_variable generates a weight variable of a given shape."""
-  return tf.Variable(tf.truncated_normal(shape, stddev=0.1),name="W")
+  return tf.Variable(tf.truncated_normal(shape, stddev=0.1), name="W")
 
 
 def bias_variable(shape):
   """bias_variable generates a bias variable of a given shape."""
-  return tf.Variable( tf.constant(0.1, shape=shape),name="B")
+  return tf.Variable( tf.constant(0.1, shape=shape), name="B")
 
 
 def conv2d(x, W):
@@ -204,8 +204,8 @@ def evaluation(logits, labels):
     """
 
     predictions = tf.argmax(input=logits, axis=1)
-    correct_predictions = tf.cast(tf.equal(predictions,labels),tf.float32)
+    correct_predictions = tf.cast(tf.equal(predictions, labels), tf.float32)
     accuracy = tf.reduce_mean(correct_predictions)
 
 
-    return predictions,correct_predictions,accuracy
+    return predictions, correct_predictions, accuracy
