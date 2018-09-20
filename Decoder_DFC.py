@@ -10,7 +10,7 @@ from spectral import get_rgb
 # input = IndianPines_Input_DFC.IndianPines_Input()
 #
 # config = {}
-# config['patch_size'] = 21
+# config['patch_size'] = 5
 # config['kernel_size'] = 3
 # config['conv1_channels'] = 32
 # config['conv2_channels'] = 64
@@ -33,6 +33,7 @@ def decode(input,config,model_ckp):
     conv2_channels = config['conv2_channels']
     fc1_units = config['fc1_units']
 
+    tf.reset_default_graph()
 
     with tf.Graph().as_default():
 
@@ -70,23 +71,23 @@ def decode(input,config,model_ckp):
                 elif is_test:
                     label = input.test_data[i, j]
 
-                if label != 0:
-                    patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
-                    patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
-                    predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1})
-                    y_ = np.argmax(predictions) + 1
-                    predicted_image[i][j] = y_
+                # if label != 0:
+                patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
+                patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
+                predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1})
+                y_ = np.argmax(predictions) + 1
+                predicted_image[i][j] = y_
 
-                    if label == y_:
-                        if is_train:
-                            correct_pixels_train.append(1)
-                        elif is_test:
-                            correct_pixels_test.append(1)
-                    else:
-                        if is_train:
-                            correct_pixels_train.append(0)
-                        elif is_test:
-                            correct_pixels_test.append(0)
+                if label == y_:
+                    if is_train:
+                        correct_pixels_train.append(1)
+                    elif is_test:
+                        correct_pixels_test.append(1)
+                else:
+                    if is_train:
+                        correct_pixels_train.append(0)
+                    elif is_test:
+                        correct_pixels_test.append(0)
 
         train_acc = np.asarray(correct_pixels_train).mean()*100
         test_acc = np.asarray(correct_pixels_test).mean()*100
@@ -97,6 +98,6 @@ def decode(input,config,model_ckp):
 def output_image(input, output):
     return get_rgb(output, color_scale=input.color_scale)
 
-# raw, accuracy = decode(input,config, 'cv21/ps=21,lr_1E-02,lr_d=Y,f=1-model-21.ckpt')
+# raw, train_acc,test_acc = decode(input,config, 'resultados/ps_5/ps5-model-5.ckpt')
 # plt.imshow(raw)
-# envi.save_image("ip2.hdr",raw,dtype=int)
+# envi.save_image("ip5.hdr",raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')

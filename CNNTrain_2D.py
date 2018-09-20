@@ -34,6 +34,8 @@ def train_model(X_train,y_train,X_test,y_test,config):
     log_dir = config['log_dir']
 
 
+    tf.reset_default_graph()
+
     """Train Indian Pines for a number of steps."""
     with tf.Graph().as_default():
 

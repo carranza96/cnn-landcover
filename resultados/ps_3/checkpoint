@@ -1,0 +1,2 @@
+model_checkpoint_path: "ps3-model-3.ckpt"
+all_model_checkpoint_paths: "ps3-model-3.ckpt"

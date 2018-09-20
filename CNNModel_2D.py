@@ -17,8 +17,8 @@ def placeholder_inputs(patch_size,in_channels):
     :param patch_size: Size of patch (small image to feed the network)
     :return: Images and labels placeholders
     """
-    x = tf.placeholder(tf.float32, shape=[None,patch_size, patch_size, in_channels],name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None],name='labels')
+    x = tf.placeholder(tf.float32, shape=[None, patch_size, patch_size, in_channels], name='x')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='labels')
 
     return x, y_
 

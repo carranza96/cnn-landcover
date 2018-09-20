@@ -40,7 +40,7 @@ config['max_epochs'] = 80
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
-oversampling = False
+oversampling = True
 rotation_oversampling = True
 validation_set = False
 
@@ -52,8 +52,7 @@ validation_set = False
 
 file = open("resultados.txt", "w+")
 
-for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
-
+for patch_size in [9]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -61,6 +60,7 @@ for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
     config['log_dir'] = log_dir + make_hparam_string(config['patch_size'])
 
     a = time.time()
+
     X_train, y_train, X_test, y_test = input.read_data(config['patch_size'])
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
@@ -69,14 +69,16 @@ for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
         X_train, X_val, y_train, y_val = \
             train_test_split(X_train, y_train, test_size=0.5, random_state=42, stratify=y_train)
 
-    if oversampling:
-        X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
-
     if rotation_oversampling:
         X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
+    if oversampling:
+        X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
+
+
 
     print('Start training')
+
 
     print(time.time() - a)
 
@@ -88,9 +90,6 @@ for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
         print("Size validation set", len(X_val))
     file.write("Size test set: %d\n" %len(X_test))
     print("Size test set", len(X_test))
-
-
-
 
 
     file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
@@ -144,7 +143,7 @@ for patch_size in [7]:#[1,3,5,9,15,21,25,31]:
 
 
     # Output image
-    envi.save_image(config['log_dir'] + ".hdr", raw, dtype=int, force=True)
+    envi.save_image(config['log_dir'] + ".hdr", raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')
     output = Decoder_DFC.output_image(input, raw)
     view = imshow(output)
     plt.savefig('ps'+str(patch_size)+'.png')

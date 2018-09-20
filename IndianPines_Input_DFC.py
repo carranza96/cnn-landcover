@@ -37,7 +37,7 @@ class IndianPines_Input():
 
 
 
-        # Obtain test data by comparing training set to comlete ground truth
+        # Obtain test data by comparing training set to complete ground truth
         self.test_data = self.get_test_data()
 
 
@@ -160,7 +160,8 @@ class IndianPines_Input():
 
 
 
-    def oversample_data(self,X,y,patch_size):
+    def oversample_data(self, X, y, patch_size):
+        print("SMOTE oversampling")
         ros = SMOTE(random_state=41)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
@@ -178,16 +179,27 @@ class IndianPines_Input():
         y_split = np.split(y_train, [2000, 4000])
 
         for i in range(len(X_split)):
-            X = X_split[i]  # Your image or batch of images
-            y = y_split[i]
-            for degree_angle in [90, 180, 270]:
-                radian = degree_angle * math.pi / 180
-                tf_img = tf.contrib.image.rotate(X, radian)
-                with tf.Session() as sess:
-                    sess.run(tf.global_variables_initializer())
+
+            tf.reset_default_graph()
+
+            with tf.Graph().as_default():
+                config = tf.ConfigProto()
+                config.gpu_options.allow_growth = True
+                sess = tf.Session(config=config)
+
+                X = X_split[i]  # Your image or batch of images
+                y = y_split[i]
+                for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                # for degree_angle in [90, 180, 270]:
+                    radian = degree_angle * math.pi / 180
+                    tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)
-                    sess.close()
-                X_train = np.append(X_train, rotated_img, axis=0)
-                y_train = np.append(y_train, y, axis=0)
+
+                    X_train = np.append(X_train, rotated_img, axis=0)
+                    y_train = np.append(y_train, y, axis=0)
+
+                sess.close()
+
+        del X_split, y_split
 
         return X_train, y_train
