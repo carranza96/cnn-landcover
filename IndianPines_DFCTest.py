@@ -40,7 +40,7 @@ config['max_epochs'] = 80
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
-oversampling = True
+oversampling = False
 rotation_oversampling = True
 validation_set = False
 
@@ -52,7 +52,7 @@ validation_set = False
 
 file = open("resultados.txt", "w+")
 
-for patch_size in [9]:
+for patch_size in [5]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -137,8 +137,8 @@ for patch_size in [9]:
         file.write("Validation accuracy; %.3f" % val_acc + "\n")
     print("Test accuracy: ", test_acc)
     file.write("Test accuracy; %.3f" % test_acc + "\n")
-    conf_matrix.to_dataframe().to_csv("conf_matrix")
-    conf_matrix.classification_report.to_csv("classification_report")
+    conf_matrix.to_dataframe().to_csv("conf_matrix" + str(patch_size))
+    conf_matrix.classification_report.to_csv("classification_report"+ str(patch_size))
 
 
 
