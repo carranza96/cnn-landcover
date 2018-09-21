@@ -2,12 +2,12 @@ import spectral.io.envi as envi
 import IndianPines_Input_DFC
 import numpy as np
 from spectral import imshow, get_rgb
-from scipy import ndimage,stats
+from scipy import ndimage, stats
 
 input = IndianPines_Input_DFC.IndianPines_Input()
 
 img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
-
+img2 = envi.open('ip_filtro5_3it.hdr', 'ip_filtro5_3it.raw')
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
@@ -75,7 +75,7 @@ def clean_image(input,img):
 
 
 
-train_acc, test_acc = accuracy(input,img)
+train_acc, test_acc = accuracy(input,img2)
 view = output_image(input, img)
 # imshow(view)
 clean_img = clean_image(input, img)
@@ -100,10 +100,12 @@ for n in range(3):
     print("Test accuracy: %.2f" %test_acc)
 
 view = output_image(input, filt_img)
-# imshow(view)
-
-clean_img = clean_image(input, filt_img)
-view = output_image(input, clean_img)
 imshow(view)
 
+# clean_img = clean_image(input, filt_img)
+# view = output_image(input, clean_img)
+# imshow(view)
+
+
+# envi.save_image("ip_filtro5_3it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

@@ -143,7 +143,7 @@ for patch_size in [5]:
 
 
     # Output image
-    envi.save_image(config['log_dir'] + ".hdr", raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+    # envi.save_image(config['log_dir'] + ".hdr", raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')
     output = Decoder_DFC.output_image(input, raw)
     view = imshow(output)
     plt.savefig('ps'+str(patch_size)+'.png')
