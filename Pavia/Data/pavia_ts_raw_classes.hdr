@@ -1,0 +1,29 @@
+ENVI
+description = {
+  Classification Image created from input ROIs [Mon Mar 02 17:39:42 2015]}
+samples = 610
+lines   = 610
+bands   = 1
+header offset = 0
+file type = ENVI Classification
+data type = 1
+interleave = bsq
+sensor type = Unknown
+classes = 10
+class lookup = {
+   0,   0,   0, 255,   0,   0,   0, 255,   0,   0, 255, 255, 255, 255,   0,
+ 255, 127,  80, 139,  28,  98, 125,  38, 205, 255, 255, 255,   0,   0, 255}
+class names = {
+ Unclassified, Self-Blocking Bricks [Red] 514 points, 
+ Meadows [Green] 540 points, 
+ Gravel [Cyan] 392 points, 
+ Shadow [Yellow] 231 points, 
+ Bitumen ([Memory2]) [Coral] 375 points, 
+ Bare Soil [Maroon3] 532 points, 
+ (painted) metal sheets [Purple2] 265 points, 
+ Asphalt [White] 548 points, 
+ Trees [Blue] 524 points}
+byte order = 0
+wavelength units = Unknown
+band names = {
+ Class Image from ROIs}

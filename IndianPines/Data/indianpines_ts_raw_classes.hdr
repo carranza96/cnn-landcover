@@ -1,0 +1,31 @@
+ENVI
+description = {
+  Classification Image created from input ROIs [Tue Dec 09 10:38:02 2014]}
+samples = 145
+lines   = 145
+bands   = 1
+header offset = 0
+file type = ENVI Classification
+data type = 1
+interleave = bsq
+sensor type = Unknown
+classes = 17
+class lookup = {
+   0,   0,   0, 255,   0,   0,   0, 255,   0,   0,   0, 255, 255, 255,   0,
+   0, 255, 255, 255,   0, 255, 176,  48,  96,  46, 139,  87, 160,  32, 240,
+ 255, 127,  80, 127, 255, 212, 218, 112, 214, 160,  82,  45, 127, 255,   0,
+ 216, 191, 216, 238,   0,   0}
+class names = {
+ Unclassified, Corn-notill [Red] 762 points, Corn-min [Green] 435 points, 
+ Grass/Pasture [Blue] 232 points, Grass/Trees [Yellow] 394 points, 
+ Hay-windrowed [Cyan] 235 points, Soybeans-notill [Magenta] 470 points, 
+ Soybeans-min [Maroon] 1424 points, Soybean-clean [Sea Green] 328 points, 
+ Woods [Purple] 728 points, Alfalfa [Coral] 29 points, 
+ Corn [Aquamarine] 146 points, Grass/pasture-mowed [Orchid] 16 points, 
+ Oats [Sienna] 10 points, Wheat [Chartreuse] 132 points, 
+ Bldg-Grass-Tree-Drives [Thistle] 291 points, 
+ Stone-steel towers [Red1] 57 points}
+byte order = 0
+wavelength units = Unknown
+band names = {
+ Class Image from ROIs}

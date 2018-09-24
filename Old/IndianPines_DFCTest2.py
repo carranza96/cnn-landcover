@@ -1,11 +1,10 @@
-import IndianPines_Input
+from IndianPines import IndianPines_Input, IndianPines_Decoder
 import time
 from collections import Counter
 import numpy as np
 import CNNTrain_2D
-import IndianPines_Decoder
 import spectral.io.envi as envi
-from spectral import imshow,save_rgb
+from spectral import imshow
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
