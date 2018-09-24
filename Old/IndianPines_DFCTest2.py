@@ -1,4 +1,5 @@
-from IndianPines import IndianPines_Input, IndianPines_Decoder
+from IndianPines import IndianPines_Input
+import Decoder
 import time
 from collections import Counter
 import numpy as np
@@ -86,7 +87,7 @@ for patch_size in [3,5,7,9]:#[1,3,5,9,15,21,25,31]:
     # Clear memory
     del X_train, X_val, X_test, y_train, y_val, y_test
 
-    raw, train_acc, test_acc = IndianPines_Decoder.decode(input, config, save_path)
+    raw, train_acc, test_acc = Decoder.decode(input, config, save_path)
 
     print("Train accuracy: ", train_acc)
     print("Validation accuracy: ", val_acc)
@@ -98,7 +99,7 @@ for patch_size in [3,5,7,9]:#[1,3,5,9,15,21,25,31]:
 
     # Output image
     envi.save_image(config['log_dir'] + ".hdr", raw, dtype=int, force=True)
-    output = IndianPines_Decoder.output_image(input, raw)
+    output = Decoder.output_image(input, raw)
     view = imshow(output)
     plt.savefig('ps'+str(patch_size)+'.png')
     #save_rgb('ps'+str(patch_size)+'.png', output, format='png')

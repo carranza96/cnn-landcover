@@ -3,26 +3,8 @@ import CNNModel_2D
 import numpy as np
 from spectral import get_rgb
 
-# Input data
-# input = IndianPines_Input_DFC.IndianPines_Input()
-#
-# config = {}
-# config['patch_size'] = 5
-# config['kernel_size'] = 3
-# config['conv1_channels'] = 32
-# config['conv2_channels'] = 64
-# config['fc1_units'] = 1024
-# config['batch_size'] = 16
-# config['max_epochs'] = 10
-# config['train_dropout'] = 0.5
-# config['initial_learning_rate'] = 0.01
-# config['decaying_lr'] = True
-#
-# input.read_data(config['patch_size'])
 
-
-
-def decode(input,config,model_ckp):
+def decode(input, config, model_ckp):
 
     patch_size = config['patch_size']
     kernel_size = config['kernel_size']
@@ -52,7 +34,7 @@ def decode(input,config,model_ckp):
         saver.restore(sess, model_ckp)
 
         predicted_image = np.zeros(shape=(input.height, input.width))
-        correct_pixels_train, correct_pixels_test = [],[]
+        correct_pixels_train, correct_pixels_test = [], []
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
@@ -95,6 +77,3 @@ def decode(input,config,model_ckp):
 def output_image(input, output):
     return get_rgb(output, color_scale=input.color_scale)
 
-# raw, train_acc,test_acc = decode(input,config, 'resultados/ps_5/ps5-model-5.ckpt')
-# plt.imshow(raw)
-# envi.save_image("ip5.hdr",raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')

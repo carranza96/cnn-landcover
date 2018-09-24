@@ -4,7 +4,7 @@ import spectral.io.envi as envi
 from collections import Counter
 import scipy.io
 from spectral import ColorScale
-from imblearn.over_sampling import RandomOverSampler,SMOTE
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 import math
 import tensorflow as tf
 

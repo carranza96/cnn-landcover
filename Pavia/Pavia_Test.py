@@ -1,4 +1,4 @@
-from IndianPines import IndianPines_Input
+from Pavia import Pavia_Input
 import Decoder
 import time
 from collections import Counter
@@ -12,15 +12,11 @@ import matplotlib.patches as patches
 
 
 
-def make_hparam_string(patch_size):
-    return "ps%d" % patch_size
-
-
 # Input data
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = IndianPines_Input.IndianPines_Input()
+input = Pavia_Input.Pavia_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
 print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
@@ -36,11 +32,11 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 1
+config['max_epochs'] = 30
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
-folder = 'IndianPines/'
+folder = 'Pavia/'
 oversampling = False
 rotation_oversampling = False
 validation_set = False
@@ -123,8 +119,6 @@ for patch_size in [5]:
 
         # Clear memory
         del X_train, X_test, y_train, y_test
-        print("Test before", test_acc)
-
 
 
 

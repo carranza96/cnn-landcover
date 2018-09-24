@@ -4,7 +4,7 @@ import spectral.io.envi as envi
 from collections import Counter
 import scipy.io
 from spectral import ColorScale
-from imblearn.over_sampling import RandomOverSampler,SMOTE
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 import math
 import tensorflow as tf
 
@@ -27,7 +27,9 @@ class Pavia_Input():
         self.class_names = trainingset_gt.metadata['class names'][1:]
 
         # Complete ground truth
-        self.complete_gt = self.convert_gt(scipy.io.loadmat("Pavia/Data/Pavia_gt.mat")['pavia_gt'])
+        pad_gt = np.pad(scipy.io.loadmat("Pavia/Data/Pavia_gt.mat")['paviaU_gt'],
+                        ((0, 0), (0, 270)), 'constant', constant_values=(0))
+        self.complete_gt = self.convert_gt(pad_gt)
 
         # Obtain train data
         self.input_data = trainingset.load()
@@ -56,8 +58,7 @@ class Pavia_Input():
 
     # Convert complete ground truth data to have same class code as in training gt image
     def convert_gt(self, gt):
-        gt_converter = {0: 0, 1: 10, 2: 1, 3: 2, 4: 11, 5: 3, 6: 4, 7: 12, 8: 5, 9: 13, 10: 6, 11: 7, 12: 8, 13: 14,
-                        14: 9, 15: 15, 16: 16}
+        gt_converter = {0: 0, 1: 8, 2: 2, 3: 3, 4: 9, 5: 7, 6: 6, 7: 5, 8: 1, 9: 4}
 
         gt_converted = np.zeros(shape=(self.height, self.width))
 
@@ -203,3 +204,5 @@ class Pavia_Input():
         del X_split, y_split
 
         return X_train, y_train
+
+
