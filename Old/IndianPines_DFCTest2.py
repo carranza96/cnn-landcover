@@ -1,9 +1,9 @@
-import IndianPines_Input_DFC
+import IndianPines_Input
 import time
 from collections import Counter
 import numpy as np
 import CNNTrain_2D
-import Decoder_DFC
+import IndianPines_Decoder
 import spectral.io.envi as envi
 from spectral import imshow,save_rgb
 from sklearn.model_selection import train_test_split
@@ -17,7 +17,7 @@ def make_hparam_string(patch_size):
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = IndianPines_Input_DFC.IndianPines_Input()
+input = IndianPines_Input.IndianPines_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
 print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
@@ -87,7 +87,7 @@ for patch_size in [3,5,7,9]:#[1,3,5,9,15,21,25,31]:
     # Clear memory
     del X_train, X_val, X_test, y_train, y_val, y_test
 
-    raw, train_acc, test_acc = Decoder_DFC.decode(input, config, save_path)
+    raw, train_acc, test_acc = IndianPines_Decoder.decode(input, config, save_path)
 
     print("Train accuracy: ", train_acc)
     print("Validation accuracy: ", val_acc)
@@ -99,7 +99,7 @@ for patch_size in [3,5,7,9]:#[1,3,5,9,15,21,25,31]:
 
     # Output image
     envi.save_image(config['log_dir'] + ".hdr", raw, dtype=int, force=True)
-    output = Decoder_DFC.output_image(input, raw)
+    output = IndianPines_Decoder.output_image(input, raw)
     view = imshow(output)
     plt.savefig('ps'+str(patch_size)+'.png')
     #save_rgb('ps'+str(patch_size)+'.png', output, format='png')

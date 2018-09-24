@@ -32,7 +32,7 @@ class DataBuffer():
         """
 
         # Shuffle data at the beginning of epoch
-        if shuffle_data and self.index_in_epoch==0:
+        if shuffle_data and self.index_in_epoch == 0:
             np.random.shuffle(self.indices)
             #self.images,self.labels = get_data_shuffled(self.images,self.labels)
 
@@ -55,7 +55,7 @@ class DataBuffer():
         else:
             self.index_in_epoch += batch_size
 
-        return images_batch,labels_batch
+        return images_batch, labels_batch
 
 
 
@@ -94,4 +94,4 @@ def get_data_shuffled(images,labels):
     # inputs_processed, labels_processed = zip(*data)
     # return np.asarray(inputs_processed), np.asarray(labels_processed)
     X, y = shuffle(images, labels)
-    return X,y
+    return X, y

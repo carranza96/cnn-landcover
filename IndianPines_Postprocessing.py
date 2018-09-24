@@ -1,12 +1,12 @@
 import spectral.io.envi as envi
-import IndianPines_Input_DFC
+import IndianPines_Input
 import numpy as np
 from spectral import imshow, get_rgb
 from scipy import ndimage, stats
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
-input = IndianPines_Input_DFC.IndianPines_Input()
+input = IndianPines_Input.IndianPines_Input()
 
 # img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
 img = envi.open('mejor_resultado/Con batch norm/ip_filtro3_5it.hdr', 'mejor_resultado/Con batch norm/ip_filtro3_5it.raw')
@@ -76,6 +76,8 @@ def clean_image(input, img):
     return clean
 
 
+labelPatches = [patches.Patch(color=input.color_scale.colorTics[x+1]/255., label=input.class_names[x]) for x in range(input.num_classes) ]
+
 
 train_acc, test_acc = accuracy(input,img)
 view = output_image(input, img)
@@ -83,35 +85,40 @@ view = output_image(input, img)
 clean_img = clean_image(input, img)
 view = output_image(input, clean_img)
 # imshow(view)
-labelPatches = [patches.Patch(color=input.class_colors[x]/255., label=input.class_names[x]) for x in range(input.num_classes) ]
-plt.figure()
-plt.legend(handles=labelPatches, ncol=2, fontsize='medium', loc='right', bbox_to_anchor=(0.5, -0.05));
-plt.imshow(img.read_band(0))
+
+
+
 
 print("Training accuracy: %.2f" %train_acc)
 print("Test accuracy: %.2f" %test_acc)
-#
-# print("---------------")
-# print("Modal filter")
-# filt_img = img.load()
-#
-# for n in range(5):
-#     print("---------------")
-#     print("Iteration " + str(n))
-#     filt_img = mode_filter(filt_img)
-#
-#     train_acc, test_acc = accuracy(input, filt_img)
-#     print("Training accuracy: %.2f" %train_acc)
-#     print("Test accuracy: %.2f" %test_acc)
-#
-# view = output_image(input, filt_img)
-# imshow(view)
-#
-# clean_img = clean_image(input, filt_img)
-# view = output_image(input, clean_img)
-# print(input.class_names)
-# imshow(view)
 
+print("---------------")
+print("Modal filter")
+filt_img = img.load()
+
+for n in range(5):
+    print("---------------")
+    print("Iteration " + str(n))
+    filt_img = mode_filter(filt_img)
+
+    train_acc, test_acc = accuracy(input, filt_img)
+    print("Training accuracy: %.2f" %train_acc)
+    print("Test accuracy: %.2f" %test_acc)
+
+view = output_image(input, filt_img)
+fig = plt.figure(1)
+lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
+imshow(view, fignum=1)
+fig.savefig("filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+
+
+
+clean_img = clean_image(input, filt_img)
+view = output_image(input, clean_img)
+fig = plt.figure(2)
+lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
+imshow(view, fignum=2)
+fig.savefig("filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 # envi.save_image("ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 
