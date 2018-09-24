@@ -138,12 +138,12 @@ for patch_size in [5]:
     print("Test accuracy: ", test_acc)
     file.write("Test accuracy; %.3f" % test_acc + "\n")
     conf_matrix.to_dataframe().to_csv("conf_matrix" + str(patch_size))
-    conf_matrix.classification_report.to_csv("classification_report"+ str(patch_size))
+    conf_matrix.classification_report.to_csv("classification_report" + str(patch_size))
 
 
 
     # Output image
-    # envi.save_image(config['log_dir'] + ".hdr", raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+    envi.save_image(config['log_dir'] + ".hdr", raw, dtype='uint8', force=True, interleave='BSQ', ext='raw')
     output = Decoder_DFC.output_image(input, raw)
     view = imshow(output)
     plt.savefig('ps'+str(patch_size)+'.png')

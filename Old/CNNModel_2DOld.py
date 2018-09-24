@@ -19,13 +19,13 @@ def placeholder_inputs(patch_size,in_channels):
     """
     x = tf.placeholder(tf.float32, shape=[None, patch_size, patch_size, in_channels], name='x')
     y_ = tf.placeholder(tf.int64, shape=[None], name='labels')
-    phase_train = tf.placeholder(tf.bool, name='phase') # Placerholder for batch_norm, training (True) or not training (False)
+    phase = tf.placeholder(tf.bool, name='phase')
 
-    return x, y_, phase_train
+    return x, y_, phase
 
 
 
-def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,fc1_units, number_of_classes, phase_train):
+def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,fc1_units, number_of_classes, phase):
     """
 
     :param images: Images placeholder, from inputs().
@@ -47,9 +47,6 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         x_image = tf.reshape(images, [-1, patch_size, patch_size, in_channels])
 
 
-    with tf.name_scope('bn1'):
-        h_bn1 = batch_norm(x_image, phase_train)
-
     # Convolutional Layer #1
     # Maps the 200 patches to conv1_channels feature maps.
     # Padding is "same" to preserve width and height
@@ -58,12 +55,8 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     with tf.name_scope('conv1'):
         W_conv1 = weight_variable([kernel_size, kernel_size, in_channels, conv1_channels])
         b_conv1 = bias_variable([conv1_channels])
-        h_conv1 = tf.nn.relu(conv2d(h_bn1, W_conv1) + b_conv1)
-
-
-
-    with tf.name_scope('bn2'):
-        h_bn2 = batch_norm(h_conv1, phase_train)
+        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+        #variables_histogram(W_conv1, b_conv1, h_conv1)
 
 
     # Pooling layer #1
@@ -71,11 +64,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     # Input Tensor Shape: [batch_size, patch_size, patch_size, conv1_channels]
     # Output Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv1_channels]
     with tf.name_scope('pool1'):
-        h_pool1 = max_pool_2x2(h_bn2)
-
-
-    with tf.name_scope('bn3'):
-        h_bn3 = batch_norm(h_pool1, phase_train)
+        h_pool1 = max_pool_2x2(h_conv1)
 
     # Convolutional Layer #2
     # Computes conv2_channels features using a kernel_size filter.
@@ -85,19 +74,14 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     with tf.name_scope('conv2'):
         W_conv2 = weight_variable([kernel_size, kernel_size, conv1_channels, conv2_channels])
         b_conv2 = bias_variable([conv2_channels])
-        h_conv2 = tf.nn.relu(conv2d(h_bn3, W_conv2) + b_conv2)
-
-
-    with tf.name_scope('bn4'):
-        h_bn4 = batch_norm(h_conv2, phase_train)
-
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+        #variables_histogram(W_conv2, b_conv2, h_conv2)
 
     # Pooling layer #2
     # Input Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv2_channels]
     # Output Tensor Shape: [batch_size, patch_size/4 , patch_size/4 , conv2_channels]
     with tf.name_scope('pool2'):
-        h_pool2 = max_pool_2x2(h_bn4)
-
+        h_pool2 = max_pool_2x2(h_conv2)
 
 
     # Fully connected layer 1 (Dense layer)
@@ -112,6 +96,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
 
         h_pool2_flat = tf.reshape(h_pool2, [-1, size_after_pools * size_after_pools * conv2_channels])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+      #variables_histogram(W_fc1, b_fc1, h_fc1)
 
     # Dropout - controls the complexity of the model, prevents co-adaptation of
     # features.
@@ -126,7 +111,9 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     with tf.name_scope('softmax_linear'):
         W_fc2 = weight_variable([fc1_units, number_of_classes])
         b_fc2 = bias_variable([number_of_classes])
+
         logits = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+      #variables_histogram(W_fc2, b_fc2, logits)
 
     return logits, keep_prob
 
@@ -185,33 +172,29 @@ def loss(logits, labels):
 
 
 def training(loss, learning_rate, global_step):
-    """
-    Sets up the training Ops.
-    Creates a summarizer to track the loss over time in TensorBoard.
-    Creates an optimizer and applies the gradients to all trainable variables.
-    The Op returned by this function is what must be passed to the
-    sess.run() call to cause the model to train.
+  """
+  Sets up the training Ops.
+  Creates a summarizer to track the loss over time in TensorBoard.
+  Creates an optimizer and applies the gradients to all trainable variables.
+  The Op returned by this function is what must be passed to the
+  sess.run() call to cause the model to train.
 
-    :param loss: Loss tensor, from loss().
-    :param learning_rate: The learning rate to use for gradient descent.
+  :param loss: Loss tensor, from loss().
+  :param learning_rate: The learning rate to use for gradient descent.
 
-    :return: The Op for training.
-    """
-    with tf.name_scope("train"):
+  :return: The Op for training.
+  """
+  with tf.name_scope("train"):
+      # Create the gradient descent optimizer with the given learning rate.
+      optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 
-        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+      # Use the optimizer to apply the gradients that minimize the loss
+      # (and also increment the global step counter) as a single training step.
+      train_op = optimizer.minimize(loss, global_step=global_step)
 
-        with tf.control_dependencies(update_ops):
-            # Create the gradient descent optimizer with the given learning rate.
-            optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+      tf.summary.scalar('learning_rate', learning_rate, collections=['train'])
 
-            # Use the optimizer to apply the gradients that minimize the loss
-            # (and also increment the global step counter) as a single training step.
-            train_op = optimizer.minimize(loss, global_step=global_step)
-
-            tf.summary.scalar('learning_rate', learning_rate, collections=['train'])
-
-    return train_op
+  return train_op
 
 
 
@@ -228,5 +211,6 @@ def evaluation(logits, labels):
     predictions = tf.argmax(input=logits, axis=1)
     correct_predictions = tf.cast(tf.equal(predictions, labels), tf.float32)
     accuracy = tf.reduce_mean(correct_predictions)
+
 
     return predictions, correct_predictions, accuracy

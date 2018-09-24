@@ -1,2 +1,0 @@
-model_checkpoint_path: "ps5-model-5.ckpt"
-all_model_checkpoint_paths: "ps5-model-5.ckpt"

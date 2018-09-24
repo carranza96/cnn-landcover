@@ -38,13 +38,13 @@ def decode(input,config,model_ckp):
     with tf.Graph().as_default():
 
         # Create placeholders
-        images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size, input.bands)
+        images_pl, labels_pl, phase_train = CNNModel_2D.placeholder_inputs(patch_size, input.bands)
 
         # Build a Graph that computes the logits predictions from the
         # inference model.
         logits, keep_prob = CNNModel_2D.inference(images_pl, input.bands, patch_size,
                                                   kernel_size, conv1_channels, conv2_channels,
-                                                  fc1_units, input.num_classes)
+                                                  fc1_units, input.num_classes, phase_train)
 
         softmax = tf.nn.softmax(logits)
 
@@ -74,7 +74,7 @@ def decode(input,config,model_ckp):
                 # if label != 0:
                 patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
                 patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
-                predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1})
+                predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1, phase_train: False})
                 y_ = np.argmax(predictions) + 1
                 predicted_image[i][j] = y_
 

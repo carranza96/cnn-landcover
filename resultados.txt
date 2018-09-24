@@ -24,4 +24,4 @@ Class distribution:
 15;2328;99
 16;456;44
 Train accuracy; 100.000
-Test accuracy; 87.964
+Test accuracy; 93.865

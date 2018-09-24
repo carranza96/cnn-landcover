@@ -46,10 +46,10 @@ class IndianPines_Input():
         self.test_pixels = np.count_nonzero(self.test_data)
 
         # Color scale to display image
-        class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
-        class_colors = class_colors.reshape((int(class_colors.size/3), 3))
+        self.class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
+        self.class_colors = self.class_colors.reshape((int(self.class_colors.size/3), 3))
 
-        self.color_scale = ColorScale([x for x in range(class_colors.shape[0])], class_colors)
+        self.color_scale = ColorScale([x for x in range(self.class_colors.shape[0])], self.class_colors)
 
 
 

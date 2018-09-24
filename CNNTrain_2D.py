@@ -45,12 +45,12 @@ def train_model(X_train,y_train,X_test,y_test,config):
         test_size = len(y_test)
 
         # Create placeholders
-        images_pl, labels_pl = CNNModel_2D.placeholder_inputs(patch_size,in_channels)
+        images_pl, labels_pl, phase_train = CNNModel_2D.placeholder_inputs(patch_size,in_channels)
 
         # Build a Graph that computes the logits predictions from the
         # inference model.
-        logits, keep_prob = CNNModel_2D.inference(images_pl, in_channels, patch_size,
-                                                  kernel_size, conv1_channels, conv2_channels, fc1_units,num_classes)
+        logits, keep_prob = CNNModel_2D.inference(images_pl, in_channels, patch_size, kernel_size, conv1_channels,
+                                                  conv2_channels, fc1_units, num_classes, phase_train)
 
         # Calculate loss.
         loss = CNNModel_2D.loss(logits, labels_pl)
@@ -111,7 +111,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
         with tf.name_scope("xent"):
             xent_var = tf.Variable(0.0)
-            tf.summary.scalar("xent",xent_var,collections=['train', 'test'])
+            tf.summary.scalar("xent", xent_var, collections=['train', 'test'])
 
 
         merged_summ_training = tf.summary.merge_all('train')
@@ -127,15 +127,15 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
 
 
-
-        def eval_test_set(step,conf_matrix=False):
-            final_test_accuracy,test_loss = 0,0
-            y_pred,y_true = [],[]
+        # Eval test
+        def eval_test_set(step, conf_matrix=False):
+            final_test_accuracy, test_loss = 0,0
+            y_pred, y_true = [], []
             for i in range(test_batch_num):
                 images_batch, labels_batch = test_data_buffer.next_batch(shuffle_data=False)
-                feed_dict_test = {images_pl: images_batch, labels_pl: labels_batch, keep_prob: 1}
-                batch_loss,batch_correct_predictions,batch_predictions = \
-                    sess.run([loss,tf.reduce_sum(correct_predictions),predictions],feed_dict= feed_dict_test)
+                feed_dict_test = {images_pl: images_batch, labels_pl: labels_batch, keep_prob: 1, phase_train: False}
+                batch_loss, batch_correct_predictions, batch_predictions = \
+                    sess.run([loss, tf.reduce_sum(correct_predictions), predictions], feed_dict=feed_dict_test)
                 test_loss += batch_loss
                 final_test_accuracy += batch_correct_predictions
 
@@ -149,7 +149,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
             test_writer.add_summary(summ_test, step)
 
             if conf_matrix:
-                cm = ConfusionMatrix(y_true,y_pred)
+                cm = ConfusionMatrix(y_true, y_pred)
                 return final_test_accuracy, cm
             else:
                 return final_test_accuracy
@@ -165,21 +165,23 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
         for epoch in range(max_epochs):
 
-
             for batch_index in range(num_batches_per_epoch):
 
                 step = tf.train.global_step(sess, global_step)
 
                 images_batch, labels_batch = data_buffer.next_batch()
 
-                feed_dict_train_dropout = {images_pl: images_batch, labels_pl: labels_batch, keep_prob: train_dropout}
-                feed_dict_train_eval = {images_pl: images_batch, labels_pl: labels_batch, keep_prob: 1}
+                feed_dict_train_dropout = {images_pl: images_batch, labels_pl: labels_batch,
+                                           keep_prob: train_dropout, phase_train: True}
+
+                feed_dict_train_eval = {images_pl: images_batch, labels_pl: labels_batch,
+                                        keep_prob: 1, phase_train: False}
 
                 # Evaluate next batch before train
                 if batch_index % 10 == 0:
-                    train_loss,train_accuracy = sess.run([loss, accuracy],feed_dict_train_eval)
+                    train_loss, train_accuracy = sess.run([loss, accuracy], feed_dict_train_eval)
 
-                    feed_dict_train_eval.update({xent_var: train_loss,acc_var:train_accuracy})
+                    feed_dict_train_eval.update({xent_var: train_loss, acc_var: train_accuracy})
                     summ_train = sess.run(merged_summ_training, feed_dict_train_eval)
                     train_writer.add_summary(summ_train, step)
 
@@ -193,7 +195,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
 
 
             # Evaluate test set frequently
-            if(epoch % test_eval_freq == 0):
+            if epoch % test_eval_freq == 0:
                 test_accuracy = eval_test_set(step)
                 print('---------------')
                 print('Epoch %d. test accuracy %g' % (epoch, test_accuracy*100))

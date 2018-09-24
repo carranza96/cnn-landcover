@@ -3,17 +3,19 @@ import IndianPines_Input_DFC
 import numpy as np
 from spectral import imshow, get_rgb
 from scipy import ndimage, stats
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 input = IndianPines_Input_DFC.IndianPines_Input()
 
-img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
-img2 = envi.open('ip_filtro5_3it.hdr', 'ip_filtro5_3it.raw')
+# img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
+img = envi.open('mejor_resultado/Con batch norm/ip_filtro3_5it.hdr', 'mejor_resultado/Con batch norm/ip_filtro3_5it.raw')
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
 
 def mode_filter(img):
-    return ndimage.generic_filter(img, modal, size=5)
+    return ndimage.generic_filter(img, modal, size=3)
 
 
 
@@ -56,7 +58,7 @@ def output_image(input, output):
     return get_rgb(output, color_scale=input.color_scale)
 
 
-def clean_image(input,img):
+def clean_image(input, img):
     clean = np.zeros(shape=(input.height, input.width))
 
     for i in range(input.height):
@@ -75,37 +77,41 @@ def clean_image(input,img):
 
 
 
-train_acc, test_acc = accuracy(input,img2)
+train_acc, test_acc = accuracy(input,img)
 view = output_image(input, img)
 # imshow(view)
 clean_img = clean_image(input, img)
 view = output_image(input, clean_img)
 # imshow(view)
-
+labelPatches = [patches.Patch(color=input.class_colors[x]/255., label=input.class_names[x]) for x in range(input.num_classes) ]
+plt.figure()
+plt.legend(handles=labelPatches, ncol=2, fontsize='medium', loc='right', bbox_to_anchor=(0.5, -0.05));
+plt.imshow(img.read_band(0))
 
 print("Training accuracy: %.2f" %train_acc)
 print("Test accuracy: %.2f" %test_acc)
-
-print("---------------")
-print("Modal filter")
-filt_img = img.load()
-
-for n in range(3):
-    print("---------------")
-    print("Iteration " + str(n))
-    filt_img = mode_filter(filt_img)
-
-    train_acc, test_acc = accuracy(input, filt_img)
-    print("Training accuracy: %.2f" %train_acc)
-    print("Test accuracy: %.2f" %test_acc)
-
-view = output_image(input, filt_img)
-imshow(view)
-
+#
+# print("---------------")
+# print("Modal filter")
+# filt_img = img.load()
+#
+# for n in range(5):
+#     print("---------------")
+#     print("Iteration " + str(n))
+#     filt_img = mode_filter(filt_img)
+#
+#     train_acc, test_acc = accuracy(input, filt_img)
+#     print("Training accuracy: %.2f" %train_acc)
+#     print("Test accuracy: %.2f" %test_acc)
+#
+# view = output_image(input, filt_img)
+# imshow(view)
+#
 # clean_img = clean_image(input, filt_img)
 # view = output_image(input, clean_img)
+# print(input.class_names)
 # imshow(view)
 
 
-# envi.save_image("ip_filtro5_3it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+# envi.save_image("ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 
