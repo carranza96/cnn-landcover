@@ -156,10 +156,11 @@ def max_pool_2x2(x):
 
 def batch_norm(x, phase):
     return tf.layers.batch_normalization(x, center=True, scale=True, training=phase)
+
     # return tf.contrib.layers.batch_norm(x, center=True, scale=True, is_training=phase)
 
 
-def variables_histogram(weights,biases,activations):
+def variables_histogram(weights, biases, activations):
   """TensorBoard visualization"""
   tf.summary.histogram("weights", weights, collections=['train'])
   tf.summary.histogram("biases", biases,  collections=['train'])

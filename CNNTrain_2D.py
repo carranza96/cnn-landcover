@@ -1,7 +1,7 @@
 import time
 
 import tensorflow as tf
-
+# from Old import CNNModel_2DOld as CNNModel_2D
 import CNNModel_2D
 from DataBuffer import *
 import math
@@ -26,7 +26,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
     conv1_channels = config['conv1_channels']
     conv2_channels = config['conv2_channels']
     fc1_units = config['fc1_units']
-    batch_size =  config['batch_size']
+    batch_size = config['batch_size']
     max_epochs = config['max_epochs']
     train_dropout = config['train_dropout']
     initial_learning_rate = config['initial_learning_rate']

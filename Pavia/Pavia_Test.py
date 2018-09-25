@@ -24,7 +24,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 7
+config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -52,6 +52,7 @@ a = time.time()
 
 X_train, y_train, X_test, y_test = input.read_data(config['patch_size'])
 #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
+
 
 
 if validation_set:
