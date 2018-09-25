@@ -9,7 +9,7 @@ import math
 from pandas_ml import ConfusionMatrix
 
 
-def train_model(X_train,y_train,X_test,y_test,config):
+def train_model(X_train, y_train, X_test, y_test, config):
     """
     Trains the model and keeps track of how the network predictions improve
     :param X_train: Training data
@@ -45,7 +45,7 @@ def train_model(X_train,y_train,X_test,y_test,config):
         test_size = len(y_test)
 
         # Create placeholders
-        images_pl, labels_pl, phase_train = CNNModel_2D.placeholder_inputs(patch_size,in_channels)
+        images_pl, labels_pl, phase_train = CNNModel_2D.placeholder_inputs(patch_size, in_channels)
 
         # Build a Graph that computes the logits predictions from the
         # inference model.

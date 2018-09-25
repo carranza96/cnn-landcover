@@ -16,25 +16,26 @@ class Pavia_Input():
         trainingset = envi.open('Pavia/Data/pavia_ds.hdr', 'Pavia/Data/pavia_ds.raw')
         trainingset_gt = envi.open('Pavia/Data/pavia_ts_raw_classes.hdr', 'Pavia/Data/pavia_ts_raw_classes.raw')
 
+        # Obtain train data
+        self.input_data = trainingset[:, :340, :]
+        self.train_data = trainingset_gt[:, :340, :].squeeze()
+        self.padded_data = self.input_data
+
         # Dataset variables
         # Input data shape: (610,610,103)
-        self.height = trainingset.nrows
-        self.width = trainingset.ncols
-        self.bands = trainingset.nbands
+        self.height = self.input_data.shape[0]
+        self.width = self.input_data.shape[1]
+        self.bands = self.input_data.shape[2]
         self.num_pixels = self.height * self.width
 
         self.num_classes = int(trainingset_gt.metadata['classes']) - 1
         self.class_names = trainingset_gt.metadata['class names'][1:]
 
         # Complete ground truth
-        pad_gt = np.pad(scipy.io.loadmat("Pavia/Data/Pavia_gt.mat")['paviaU_gt'],
-                        ((0, 0), (0, 270)), 'constant', constant_values=(0))
-        self.complete_gt = self.convert_gt(pad_gt)
+        # pad_gt = np.pad(scipy.io.loadmat("Pavia/Data/Pavia_gt.mat")['paviaU_gt'],
+        #                 ((0, 0), (0, 270)), 'constant', constant_values=0)
+        self.complete_gt = self.convert_gt(scipy.io.loadmat("Pavia/Data/Pavia_gt.mat")['paviaU_gt'])
 
-        # Obtain train data
-        self.input_data = trainingset.load()
-        self.train_data = trainingset_gt.load().squeeze()
-        self.padded_data = self.input_data
 
 
 
@@ -163,7 +164,7 @@ class Pavia_Input():
     def oversample_data(self, X, y, patch_size):
         print("Oversampling")
         # ros = SMOTE(random_state=41)
-        ros = RandomOverSampler(ratio={11:300} ,random_state=41)
+        ros = RandomOverSampler(random_state=41)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
         print('Resampled dataset shape {}'.format(Counter(y)))
@@ -206,3 +207,4 @@ class Pavia_Input():
         return X_train, y_train
 
 
+input = Pavia_Input()
