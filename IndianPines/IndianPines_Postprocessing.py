@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 input = IndianPines_Input.IndianPines_Input()
 
 # img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
-img = envi.open('mejor_resultado/Con batch norm/ip_filtro3_5it.hdr', 'mejor_resultado/Con batch norm/ip_filtro3_5it.raw')
+img = envi.open('IndianPines/resultados/ps7/ps7.hdr', 'IndianPines/resultados/ps7/ps7.raw')
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
@@ -109,7 +109,7 @@ view = output_image(input, filt_img)
 fig = plt.figure(1)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=1)
-fig.savefig("filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("IndianPines/filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 
@@ -118,7 +118,7 @@ view = output_image(input, clean_img)
 fig = plt.figure(2)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=2)
-fig.savefig("filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("IndianPines/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
-# envi.save_image("ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+envi.save_image("IndianPines/ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

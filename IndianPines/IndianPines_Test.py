@@ -36,13 +36,13 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 1
+config['max_epochs'] = 80
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 folder = 'IndianPines/'
-oversampling = False
-rotation_oversampling = False
+oversampling = True
+rotation_oversampling = True
 validation_set = False
 
 
@@ -70,11 +70,13 @@ for patch_size in [5]:
         X_train, X_val, y_train, y_val = \
             train_test_split(X_train, y_train, test_size=0.5, random_state=42, stratify=y_train)
 
-    if rotation_oversampling:
-        X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
     if oversampling:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
+
+    if rotation_oversampling:
+        X_train, y_train = input.rotation_oversampling(X_train, y_train)
+
 
 
 
@@ -123,7 +125,6 @@ for patch_size in [5]:
 
         # Clear memory
         del X_train, X_test, y_train, y_test
-        print("Test before", test_acc)
 
 
 
