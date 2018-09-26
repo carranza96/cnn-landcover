@@ -28,7 +28,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 9
+config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -36,14 +36,14 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 1
-config['train_dropout'] = 1
+config['max_epochs'] = 80
+config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = 1
 folder = 'IndianPines/'
-oversampling = False
-rotation_oversampling = False
+oversampling = True
+rotation_oversampling = True
 validation_set = False
 
 
