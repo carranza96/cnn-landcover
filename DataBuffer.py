@@ -4,7 +4,7 @@ from sklearn.utils import shuffle
 
 class DataBuffer():
 
-    def __init__(self,images,labels,batch_size):
+    def __init__(self, images, labels, batch_size, seed=None):
         """
 
         :param images: Input data
@@ -23,7 +23,7 @@ class DataBuffer():
         self.epochs_completed = 0
         self.index_in_epoch = 0
 
-
+        self.seed = seed
 
     def next_batch(self, shuffle_data=True):
         """
@@ -33,7 +33,8 @@ class DataBuffer():
 
         # Shuffle data at the beginning of epoch
         if shuffle_data and self.index_in_epoch == 0:
-            np.random.shuffle(self.indices)
+            np.random.RandomState(self.seed).shuffle(self.indices)
+            print(self.indices)
             #self.images,self.labels = get_data_shuffled(self.images,self.labels)
 
 

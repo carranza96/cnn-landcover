@@ -59,6 +59,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         W_conv1 = weight_variable([kernel_size, kernel_size, in_channels, conv1_channels])
         b_conv1 = bias_variable([conv1_channels])
         h_conv1 = tf.nn.relu(conv2d(h_bn1, W_conv1) + b_conv1)
+        variables_histogram(W_conv1, b_conv1, h_conv1)
 
 
 
@@ -140,7 +141,7 @@ def weight_variable(shape):
 
 def bias_variable(shape):
   """bias_variable generates a bias variable of a given shape."""
-  return tf.Variable( tf.constant(0.1, shape=shape), name="B")
+  return tf.Variable(tf.constant(0.1, shape=shape), name="B")
 
 
 def conv2d(x, W):

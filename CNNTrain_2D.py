@@ -32,12 +32,15 @@ def train_model(X_train, y_train, X_test, y_test, config):
     initial_learning_rate = config['initial_learning_rate']
     decaying_lr = config['decaying_lr']
     log_dir = config['log_dir']
+    seed = config['seed']
 
 
     tf.reset_default_graph()
 
     """Train Indian Pines for a number of steps."""
     with tf.Graph().as_default():
+
+        tf.set_random_seed(seed)
 
         # Size of input
         input_size = len(y_train)
@@ -91,9 +94,16 @@ def train_model(X_train, y_train, X_test, y_test, config):
         # Run the Op to initialize the variables.
         sess.run(init)
 
+        # all_vars = tf.trainable_variables()
+        # print(all_vars)
+        # for v in all_vars:
+        #     if v.name == 'conv1/W:0':
+        #         v_ = sess.run(v)
+        #         print(v_)
+
 
         # Create DataBuffer for managing batches of train set
-        data_buffer = DataBuffer(images=X_train, labels=y_train, batch_size=batch_size)
+        data_buffer = DataBuffer(images=X_train, labels=y_train, batch_size=batch_size, seed=seed)
 
 
 

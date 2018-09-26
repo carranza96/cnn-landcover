@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 
 input = IndianPines_Input.IndianPines_Input()
 
-# img = envi.open('mejor_resultado/ps5.hdr', 'mejor_resultado/ps5.raw')
-img = envi.open('IndianPines/resultados/ps7/ps7.hdr', 'IndianPines/resultados/ps7/ps7.raw')
+img = envi.open('IndianPines/mejor_resultado/Con batch norm/ps5.hdr', 'IndianPines/mejor_resultado/Con batch norm/ps5_batchnorm_93.raw')
+# img = envi.open('IndianPines/resultados/ps7/ps7.hdr', 'IndianPines/resultados/ps7/ps7.raw')
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
@@ -92,33 +92,33 @@ view = output_image(input, clean_img)
 print("Training accuracy: %.2f" %train_acc)
 print("Test accuracy: %.2f" %test_acc)
 
-print("---------------")
-print("Modal filter")
-filt_img = img.load()
-
-for n in range(5):
-    print("---------------")
-    print("Iteration " + str(n))
-    filt_img = mode_filter(filt_img)
-
-    train_acc, test_acc = accuracy(input, filt_img)
-    print("Training accuracy: %.2f" %train_acc)
-    print("Test accuracy: %.2f" %test_acc)
-
-view = output_image(input, filt_img)
-fig = plt.figure(1)
-lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
-imshow(view, fignum=1)
-fig.savefig("IndianPines/filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
-
-
-
-clean_img = clean_image(input, filt_img)
-view = output_image(input, clean_img)
-fig = plt.figure(2)
-lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
-imshow(view, fignum=2)
-fig.savefig("IndianPines/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
-
-envi.save_image("IndianPines/ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
-
+# print("---------------")
+# print("Modal filter")
+# filt_img = img.load()
+#
+# for n in range(5):
+#     print("---------------")
+#     print("Iteration " + str(n))
+#     filt_img = mode_filter(filt_img)
+#
+#     train_acc, test_acc = accuracy(input, filt_img)
+#     print("Training accuracy: %.2f" %train_acc)
+#     print("Test accuracy: %.2f" %test_acc)
+#
+# view = output_image(input, filt_img)
+# fig = plt.figure(1)
+# lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
+# imshow(view, fignum=1)
+# fig.savefig("IndianPines/filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+#
+#
+#
+# clean_img = clean_image(input, filt_img)
+# view = output_image(input, clean_img)
+# fig = plt.figure(2)
+# lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
+# imshow(view, fignum=2)
+# fig.savefig("IndianPines/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+#
+# envi.save_image("IndianPines/ip_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+#
