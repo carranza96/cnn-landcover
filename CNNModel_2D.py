@@ -75,8 +75,8 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         h_pool1 = max_pool_2x2(h_bn2)
 
 
-    with tf.name_scope('bn3'):
-        h_bn3 = batch_norm(h_pool1, phase_train)
+    # with tf.name_scope('bn3'):
+    #     h_bn3 = batch_norm(h_pool1, phase_train)
 
     # Convolutional Layer #2
     # Computes conv2_channels features using a kernel_size filter.
@@ -86,7 +86,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     with tf.name_scope('conv2'):
         W_conv2 = weight_variable([kernel_size, kernel_size, conv1_channels, conv2_channels])
         b_conv2 = bias_variable([conv2_channels])
-        h_conv2 = tf.nn.relu(conv2d(h_bn3, W_conv2) + b_conv2)
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
 
     with tf.name_scope('bn4'):

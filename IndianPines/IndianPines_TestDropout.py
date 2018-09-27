@@ -49,17 +49,17 @@ validation_set = False
 
 
 
-file = open(folder + "resultados" + str(config['train_dropout']) + ".txt", "w+")
+file = open(folder + "resultados_3bn_" + str(config['train_dropout']) + ".txt", "w+")
 
 
 print("Patch size:" + str(config['patch_size']))
 config['patch_size'] = config['patch_size']
-log_dir = folder + "resultados/td" + str(config['train_dropout']) + "/"
+log_dir = folder + "resultados_3bn/td" + str(config['train_dropout']) + "/"
 
 
 accuracies = []
 
-for seed in [1, 2, 3, 4, 5]:
+for seed in range(1, 11):
     config['log_dir'] = log_dir + str(seed) + "/"
     config['seed'] = seed
 
