@@ -33,13 +33,13 @@ config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
 config['max_epochs'] = 80
-config['train_dropout'] = 0.2
+config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
-config['seed'] = 1
+config['seed'] = None
 folder = 'Pavia/'
 oversampling = False
-rotation_oversampling = False
+rotation_oversampling = True
 validation_set = False
 
 
@@ -47,8 +47,8 @@ file = open(folder + "resultados" + str(config['train_dropout']) + ".txt", "w+")
 
 print("Patch size:" + str(config['patch_size']))
 file.write("\n--------------------------------\n")
-file.write("Patch size: "+ str(config['patch_size'])+ "\n")
-log_dir = folder + "resultados/ps" + str(config['patch_size']) + "/"
+file.write("Patch size: "+ str(config['patch_size']) + "\n")
+log_dir = folder + "resultados0.8/ps" + str(config['patch_size']) + "/"
 config['log_dir'] = log_dir
 
 a = time.time()
