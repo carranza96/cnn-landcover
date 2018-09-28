@@ -1,0 +1,84 @@
+========================================================================
+Task Description
+========================================================================
+Using only P, L, C polarimetric SAR data from the JPL AirSAR plus a
+training population, devise a land-cover classification procedure.
+This map will be compared to our testing population in order to
+determine the quality of the classification procedure.
+This will involve using the testing population for calcuating the
+standard measures:
+1. The confusion matrix, in pixel counts
+2. The confustion matrix, in percents
+3. The Kappa coefficient
+4. The producer's accuray
+5. The user's accuracy
+6. The overall accuracy
+
+
+
+
+========================================================================
+SAR Dataset description
+========================================================================
+This dataset is from the JPL AirSAR.
+The acquisition date is May 10, 1999.
+Some other specifications are:
+
+Range pixel spacing (in meters)(for highest freq product)   =3.3310
+Azimuth pixel spacing (in meters)(for highest freq product) =9.2592
+Corner 1 latitude in degrees                                =37.841801
+Corner 1 longitude in degrees                               =-122.537804
+Corner 2 latitude in degrees                                =37.842583
+Corner 2 longitude in degrees                               =-122.440987
+Corner 3 latitude in degrees                                =37.745338
+Corner 3 longitude in degrees                               =-122.439392
+Corner 4 latitude in degrees                                =37.744476
+Corner 4 longitude in degrees                               =-122.536163
+Compressed Stokes Matrix format
+(Other information is available in the header, see the format document.)
+
+You will need to "decompress" the data in order to use it.
+The recipe for this process is described in the format document:
+airsar_formats_v0.17_2003.pdf
+The formulas provided is section 1.3.5 are applicable to all 3 bands,
+not just L-band.
+
+Briefly:
+A GIF of a visual representation of the image data is provided in the
+file named cm6406.gif. This can be used to make sure your pre-processing
+of the data results in the correct image data.
+The 3 *.dat files are the P, L, and C-band polarimetric radar
+backscatter over the same region.
+They each have a text header, whose length is provided in the header,
+you can see this by just looking at the first bit of the file.
+The data is interleaved by channel, so the first 10 data bytes are the
+10 bytes of the compressed stokes format for pixel 1 in the image.
+The next 10 bytes are for pixel #2, etc.
+The image data is provided in order by line, so the left-most pixel of
+the first line is first, follwed by the next pixel in line 1, all the
+way to the Nth pixel of line 1, then it starts witht he first pixel of
+line #2, etc.
+
+
+========================================================================
+Ground Truth Dataset description
+========================================================================
+
+The training population is provided as a tiff image, where the values
+are from 0 to 14 (cm6406_ground_truth_training.tiff), and also as a
+color image (cm6406_ground_truth_training_color.tiff), so that they
+are easily visualizable.
+
+The correspondance between the integer value in the file
+cm6406_ground_truth_training.tiff
+and the actual land cover is given by the following table:
+
+integer    class-name
+----------------------------------
+0          background, unclassified
+1          ocean
+2          urban
+3          mixed trees/grass
+
+The number of pixels in each training class is highly variable, with
+some having very few or even no pixels.

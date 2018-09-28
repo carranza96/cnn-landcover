@@ -37,13 +37,13 @@ config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
 config['max_epochs'] = 50
-config['train_dropout'] = 0.1
+config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IndianPines/'
-oversampling = False
-rotation_oversampling = False
+oversampling = True
+rotation_oversampling = True
 validation_set = False
 
 
