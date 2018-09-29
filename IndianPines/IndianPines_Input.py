@@ -170,9 +170,12 @@ class IndianPines_Input():
 
 
 
-    def rotation_oversampling(self, X_train, y_train):
+    def rotation_oversampling(self, X_train, y_train, conv3d=False):
 
         print("Rotating patches")
+
+        if conv3d:
+            X_train = np.squeeze(X_train, axis=4)
 
         # Split to avoid out of mem error
         X_split = np.split(X_train, [2000, 4000])
@@ -201,5 +204,8 @@ class IndianPines_Input():
                 sess.close()
 
         del X_split, y_split
+
+        if conv3d:
+            X_train = np.expand_dims(X_train, axis=4)
 
         return X_train, y_train

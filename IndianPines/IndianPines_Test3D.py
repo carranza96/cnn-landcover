@@ -62,7 +62,7 @@ for patch_size in [5]:
 
     a = time.time()
 
-    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'],conv3d=True)
+    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'], conv3d=True)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 
@@ -75,7 +75,7 @@ for patch_size in [5]:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
 
     if rotation_oversampling:
-        X_train, y_train = input.rotation_oversampling(X_train, y_train)
+        X_train, y_train = input.rotation_oversampling(X_train, y_train, conv3d=True)
 
 
 
