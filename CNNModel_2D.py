@@ -25,7 +25,8 @@ def placeholder_inputs(patch_size,in_channels):
 
 
 
-def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,fc1_units, number_of_classes, phase_train):
+def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,
+              fc1_units, number_of_classes, phase_train):
     """
 
     :param images: Images placeholder, from inputs().

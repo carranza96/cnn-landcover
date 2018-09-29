@@ -149,7 +149,7 @@ class IndianPines_Input():
 
 
         if rotation_oversampling:
-            X_train,y_train = self.rotation_oversampling(X_train, y_train)
+            X_train, y_train = self.rotation_oversampling(X_train, y_train)
 
 
 
@@ -180,8 +180,8 @@ class IndianPines_Input():
         print("Rotating patches")
 
         # Split to avoid out of mem error
-        X_split = np.split(X_train, [2000, 4000])
-        y_split = np.split(y_train, [2000, 4000])
+        X_split = np.split(X_train, [1000, 2000, 3000, 4000])
+        y_split = np.split(y_train, [1000, 2000, 3000, 4000])
 
         for i in range(len(X_split)):
 

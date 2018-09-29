@@ -2,7 +2,7 @@ import time
 
 import tensorflow as tf
 # from Old import CNNModel_2DOld as CNNModel_2D
-import CNNModel_2D
+import CNNModel_2DBueno as CNNModel_2D
 from DataBuffer import *
 import math
 #from sklearn.metrics import confusion_matrix
