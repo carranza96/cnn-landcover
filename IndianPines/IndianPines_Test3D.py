@@ -45,7 +45,7 @@ config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IndianPines/'
 oversampling = False
-rotation_oversampling = True
+rot_oversampling = True
 validation_set = False
 
 
@@ -62,7 +62,9 @@ for patch_size in [5]:
 
     a = time.time()
 
-    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'], conv3d=True)
+    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'],
+                                                       rotation_oversampling=rot_oversampling,
+                                                       conv3d=True)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 
@@ -73,11 +75,6 @@ for patch_size in [5]:
 
     if oversampling:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
-
-    if rotation_oversampling:
-        X_train, y_train = input.rotation_oversampling(X_train, y_train, conv3d=True)
-
-
 
 
     print('Start training')

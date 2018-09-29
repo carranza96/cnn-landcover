@@ -100,7 +100,7 @@ class IndianPines_Input():
 
 
     # Read patches
-    def read_data(self, patch_size, conv3d=False):
+    def read_data(self, patch_size, rotation_oversampling = False, conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -148,6 +148,11 @@ class IndianPines_Input():
         y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
 
 
+        if rotation_oversampling:
+            X_train,y_train = self.rotation_oversampling(X_train, y_train)
+
+
+
         # For 3D shape must be 5D Tensor
         # [num_examples, in_depth, in_height, in_width, in_channels(1)]
         if conv3d:
@@ -170,12 +175,9 @@ class IndianPines_Input():
 
 
 
-    def rotation_oversampling(self, X_train, y_train, conv3d=False):
+    def rotation_oversampling(self, X_train, y_train):
 
         print("Rotating patches")
-
-        if conv3d:
-            X_train = np.squeeze(X_train, axis=4)
 
         # Split to avoid out of mem error
         X_split = np.split(X_train, [2000, 4000])
@@ -205,7 +207,5 @@ class IndianPines_Input():
 
         del X_split, y_split
 
-        if conv3d:
-            X_train = np.expand_dims(X_train, axis=4)
 
         return X_train, y_train
