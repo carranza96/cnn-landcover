@@ -1,5 +1,5 @@
 from IndianPines import IndianPines_Input
-import Decoder
+import Decoder3D as Decoder
 import time
 from collections import Counter
 import numpy as np
