@@ -28,7 +28,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 9
+config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -36,7 +36,7 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 50
+config['max_epochs'] = 60
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
