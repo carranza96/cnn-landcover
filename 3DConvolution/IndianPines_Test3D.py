@@ -66,6 +66,7 @@ for patch_size in [5]:
                                                        rotation_oversampling=rot_oversampling,
                                                        conv3d=True)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
+    print(X_train.shape)
 
 
     if validation_set:

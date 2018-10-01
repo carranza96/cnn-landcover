@@ -100,7 +100,7 @@ class IndianPines_Input():
 
 
     # Read patches
-    def read_data(self, patch_size, rotation_oversampling = False, conv3d=False):
+    def read_data(self, patch_size, rotation_oversampling=False, conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -167,7 +167,7 @@ class IndianPines_Input():
     def oversample_data(self, X, y, patch_size):
         print("Oversampling")
         # ros = SMOTE(random_state=41)
-        ros = RandomOverSampler(ratio={11: 400}, random_state=37)
+        ros = RandomOverSampler(ratio={11: 1400}, random_state=37)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
         print('Resampled dataset shape {}'.format(Counter(y)))
@@ -180,8 +180,8 @@ class IndianPines_Input():
         print("Rotating patches")
 
         # Split to avoid out of mem error
-        X_split = np.split(X_train, [1000, 2000, 3000, 4000])
-        y_split = np.split(y_train, [1000, 2000, 3000, 4000])
+        X_split = np.split(X_train, [2000, 4000])
+        y_split = np.split(y_train, [2000, 4000])
 
         for i in range(len(X_split)):
 

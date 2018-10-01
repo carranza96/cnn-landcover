@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 input = Pavia_Input.Pavia_Input()
 #img = envi.open("pavia.hdr", "pavia.raw")
-img = envi.open('Pavia/resultados0.8/ps5/ps5.hdr', 'Pavia/resultados0.8/ps5/ps5.raw').load()
+img = envi.open('Pavia/resultados/ps5/td0.2/23/ps5.hdr', 'Pavia/resultados/ps5/td0.2/23/ps5.raw').load()
 # img = np.pad(img, ((0, 0), (0, 270), (0,0)), 'constant', constant_values=0)
 # envi.save_image("pavia.hdr", img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 
@@ -123,4 +123,4 @@ imshow(view, fignum=2)
 fig.savefig("Pavia/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 envi.save_image("Pavia/pavia_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
-#
+

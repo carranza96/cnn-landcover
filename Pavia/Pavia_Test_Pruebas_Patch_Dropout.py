@@ -42,7 +42,7 @@ oversampling = False
 rotation_oversampling = True
 validation_set = False
 
-for patch_size in [3, 5]:
+for patch_size in [3]:
 
     config['patch_size'] = patch_size
 
@@ -50,7 +50,7 @@ for patch_size in [3, 5]:
 
         config['train_dropout'] = train_dropout
 
-        file = open(folder + "resultados_" + str(config['patch_size']) + "_" + str(config['train_dropout']) + ".txt", "w+")
+        file = open(folder + "resultados_3bn_" + str(config['patch_size']) + "_" + str(config['train_dropout']) + ".txt", "w+")
 
         accuracies = []
 
@@ -58,10 +58,11 @@ for patch_size in [3, 5]:
 
             config['seed'] = seed
 
+
             print("Patch size:" + str(config['patch_size']))
             file.write("\n--------------------------------\n")
             file.write("Patch size: " + str(config['patch_size']) + "\n")
-            log_dir = folder + "resultados/ps" + str(config['patch_size']) + "/td" + str(config['train_dropout']) + "/"
+            log_dir = folder + "resultados/ps" + str(config['patch_size']) + "/td" + str(config['train_dropout']) + "/" + str(seed) + "/"
             config['log_dir'] = log_dir
 
             a = time.time()
@@ -88,14 +89,15 @@ for patch_size in [3, 5]:
 
             print(time.time() - a)
 
-            file.write("\n--------------------------------\n")
-            file.write("Size training set: %d\n" %len(X_train))
-            print("Size training set", len(X_train))
-            if validation_set:
-                file.write("Size validation set: %d\n" % len(X_val))
-                print("Size validation set", len(X_val))
-            file.write("Size test set: %d\n" %len(X_test))
-            print("Size test set", len(X_test))
+            if seed == 1:
+                file.write("\n--------------------------------\n")
+                file.write("Size training set: %d\n" %len(X_train))
+                print("Size training set", len(X_train))
+                if validation_set:
+                    file.write("Size validation set: %d\n" % len(X_val))
+                    print("Size validation set", len(X_val))
+                file.write("Size test set: %d\n" %len(X_test))
+                print("Size test set", len(X_test))
 
 
             file.write("\n------------------\nResults for patch size " + str(config['patch_size']) + ":\n")

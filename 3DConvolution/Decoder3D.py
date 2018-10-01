@@ -25,7 +25,7 @@ def decode(input, config, model_ckp):
         # Build a Graph that computes the logits predictions from the
         # inference model.
         logits, keep_prob = CNNModel_3D.inference(images_pl, in_depth, in_channels, patch_size, spectral_kernel_size,
-                                                  spatial_kernel_size,conv1_channels, conv2_channels,
+                                                  spatial_kernel_size, conv1_channels, conv2_channels,
                                                   fc1_units, input.num_classes, phase_train)
 
         softmax = tf.nn.softmax(logits)
