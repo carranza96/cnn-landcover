@@ -221,6 +221,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
 
 
 
+
         train_writer.close()
         test_writer.close()
         save_path = saver.save(sess, log_dir + 'model-' + str(patch_size) + '.ckpt')

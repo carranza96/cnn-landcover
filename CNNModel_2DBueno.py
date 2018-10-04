@@ -25,7 +25,7 @@ def placeholder_inputs(patch_size,in_channels):
 
 
 
-def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,fc1_units, number_of_classes, phase_train):
+def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv2_channels, fc1_units, number_of_classes, phase_train):
     """
 
     :param images: Images placeholder, from inputs().
@@ -59,7 +59,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         W_conv1 = weight_variable([kernel_size, kernel_size, in_channels, conv1_channels])
         b_conv1 = bias_variable([conv1_channels])
         h_conv1 = tf.nn.relu(conv2d(h_bn1, W_conv1) + b_conv1)
-        variables_histogram(W_conv1, b_conv1, h_conv1)
+        # variables_histogram(W_conv1, b_conv1, h_conv1)
 
 
 
@@ -88,7 +88,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         b_conv2 = bias_variable([conv2_channels])
         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
-
+    #
     with tf.name_scope('bn4'):
         h_bn4 = batch_norm(h_conv2, phase_train)
 

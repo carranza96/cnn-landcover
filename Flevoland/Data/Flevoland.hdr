@@ -1,0 +1,19 @@
+ENVI
+samples = 1024
+lines = 1279
+bands = 27
+header offset = 0
+file type = ENVI Standard
+data type = 4
+interleave = bsq
+sensor type = AIRSAR
+byte order = 1
+wavelength units = meters
+band names = {
+AMP,AMP_HH,PHASE_HH,AMP_HV,PHASE_HV,AMP_VH,PHASE_VH,AMP_VV,PHASE_VV}
+classes = 15
+   0,   0,   0, 255,   0,   0,   0, 255,   0,   0,   0, 255, 255, 255,   0,
+   0, 255, 255, 255,   0, 255, 176,  48,  96,  46, 139,  87, 160,  32, 240,
+ 255, 127,  80, 127, 255, 212, 218, 112, 214, 160,  82,  45, 127, 255,   0}
+class names = {Unclassified, Rapeseed, Potato, Barley, Maize, Lucerne , Flax, Peas, Fruit,
+Beans, Wheat, Beet, Grass, Oats, Onions}
