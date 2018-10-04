@@ -25,8 +25,7 @@ def placeholder_inputs(patch_size,in_channels):
 
 
 
-def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2_channels,
-              fc1_units, number_of_classes, phase_train):
+def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv2_channels, fc1_units, number_of_classes, phase_train):
     """
 
     :param images: Images placeholder, from inputs().
@@ -64,18 +63,20 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
 
 
 
+    with tf.name_scope('bn2'):
+        h_bn2 = batch_norm(h_conv1, phase_train)
+
 
     # Pooling layer #1
     # Downsamples by 2X.
     # Input Tensor Shape: [batch_size, patch_size, patch_size, conv1_channels]
     # Output Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv1_channels]
     with tf.name_scope('pool1'):
-        h_pool1 = max_pool_2x2(h_conv1)
+        h_pool1 = max_pool_2x2(h_bn2)
 
 
-    with tf.name_scope('bn3'):
-        h_bn3 = batch_norm(h_pool1, phase_train)
-
+    # with tf.name_scope('bn3'):
+    #     h_bn3 = batch_norm(h_pool1, phase_train)
 
     # Convolutional Layer #2
     # Computes conv2_channels features using a kernel_size filter.
@@ -85,21 +86,20 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
     with tf.name_scope('conv2'):
         W_conv2 = weight_variable([kernel_size, kernel_size, conv1_channels, conv2_channels])
         b_conv2 = bias_variable([conv2_channels])
-        h_conv2 = tf.nn.relu(conv2d(h_bn3, W_conv2) + b_conv2)
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
-
-
+    #
+    with tf.name_scope('bn4'):
+        h_bn4 = batch_norm(h_conv2, phase_train)
 
 
     # Pooling layer #2
     # Input Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv2_channels]
     # Output Tensor Shape: [batch_size, patch_size/4 , patch_size/4 , conv2_channels]
     with tf.name_scope('pool2'):
-        h_pool2 = max_pool_2x2(h_conv2)
+        h_pool2 = max_pool_2x2(h_bn4)
 
 
-    with tf.name_scope('bn4'):
-        h_bn4 = batch_norm(h_pool2, phase_train)
 
     # Fully connected layer 1 (Dense layer)
     # After 2 round of downsampling, our patch_size*patch_size image
@@ -111,7 +111,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels,conv2
         W_fc1 = weight_variable([size_after_pools * size_after_pools * conv2_channels, fc1_units])
         b_fc1 = bias_variable([fc1_units])
 
-        h_pool2_flat = tf.reshape(h_bn4, [-1, size_after_pools * size_after_pools * conv2_channels])
+        h_pool2_flat = tf.reshape(h_pool2, [-1, size_after_pools * size_after_pools * conv2_channels])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
     # Dropout - controls the complexity of the model, prevents co-adaptation of

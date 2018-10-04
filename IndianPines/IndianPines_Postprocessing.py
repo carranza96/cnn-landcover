@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 input = IndianPines_Input.IndianPines_Input()
 
-# img = envi.open('IndianPines/mejor_resultado/Con batch norm/ps5.hdr', 'IndianPines/mejor_resultado/Con batch norm/ps5_batchnorm_93.raw')
 img = envi.open('IndianPines/resultados/ps5/ps5.hdr', 'IndianPines/resultados/ps5/ps5.raw')
 
 def modal(x):

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import CNNModel_2DBueno as CNNModel_2D
+import CNNModel_2D as CNNModel_2D
 import numpy as np
 from spectral import get_rgb
 

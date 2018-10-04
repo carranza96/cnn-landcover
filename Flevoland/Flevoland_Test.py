@@ -49,7 +49,7 @@ validation_set = False
 
 file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [5]:
+for patch_size in [3]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size

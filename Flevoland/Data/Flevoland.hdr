@@ -11,7 +11,8 @@ byte order = 1
 wavelength units = meters
 band names = {
 AMP,AMP_HH,PHASE_HH,AMP_HV,PHASE_HV,AMP_VH,PHASE_VH,AMP_VV,PHASE_VV}
-classes = 15
+classes = 14
+class lookup = {
    0,   0,   0, 255,   0,   0,   0, 255,   0,   0,   0, 255, 255, 255,   0,
    0, 255, 255, 255,   0, 255, 176,  48,  96,  46, 139,  87, 160,  32, 240,
  255, 127,  80, 127, 255, 212, 218, 112, 214, 160,  82,  45, 127, 255,   0}

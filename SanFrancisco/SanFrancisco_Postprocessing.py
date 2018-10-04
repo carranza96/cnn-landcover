@@ -6,7 +6,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 input = SanFrancisco_Input.SanFrancisco_Input()
-img = envi.open('SanFrancisco/resultados/ps5/ps5.hdr', 'SanFrancisco/resultados/ps5/ps5.raw').load()
+img = envi.open('SanFrancisco/mejor_resultado_sinRot/ps5.hdr', 'SanFrancisco/mejor_resultado_sinRot/ps5.raw').load()
 
 
 def modal(x):
@@ -34,16 +34,16 @@ filt_img = img
 for n in range(5):
     print("---------------")
     print("Iteration " + str(n))
+
+
     filt_img = mode_filter(filt_img)
 
 
     view = output_image(input, filt_img)
-    fig = plt.figure(n)
+    fig = plt.figure(n+2)
     lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
-    imshow(view, fignum=n)
-    fig.savefig("SanFrancisco/filt_lgdRot", bbox_extra_artists=(lgd,), bbox_inches='tight')
+    imshow(view, fignum=n+2)
+    fig.savefig("SanFrancisco/filt3_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
-
-
-envi.save_image("SanFrancisco/sanfranciscoRot_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+envi.save_image("SanFrancisco/sanfrancisco_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

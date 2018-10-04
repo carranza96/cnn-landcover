@@ -39,7 +39,7 @@ config['decaying_lr'] = True
 config['seed'] = None
 folder = 'Pavia/'
 oversampling = False
-rotation_oversampling = False
+rotation_oversampling = True
 validation_set = False
 
 
