@@ -1,5 +1,5 @@
-from IEEEContest import Input2018
-import Decoder
+from IEEEContest2018 import Input2018
+from IEEEContest2018 import Decoder2018 as Decoder
 import time
 from collections import Counter
 import numpy as np
@@ -35,12 +35,12 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 30
+config['max_epochs'] = 10
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-folder = 'IEEEContest/'
+folder = 'IEEEContest2018/'
 oversampling = False
 rotation_oversampling = False
 validation_set = False
@@ -50,7 +50,7 @@ validation_set = False
 
 file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [5]:
+for patch_size in [3]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -60,7 +60,7 @@ for patch_size in [5]:
     a = time.time()
 
     X, y = input.read_data(config['patch_size'])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.8, random_state = 42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 
@@ -124,12 +124,10 @@ for patch_size in [5]:
         # Clear memory
         del X_train, X_test, y_train, y_test
 
-
-
-
+    train_acc, test_acc = 0, 0
 
     # Decode result
-    raw, train_acc, test_acc = Decoder.decode(input, config, save_path)
+    raw = Decoder.decode(input, config, save_path)
 
     print("Train accuracy: ", train_acc)
     file.write("Train accuracy; %.3f" % train_acc + "\n")

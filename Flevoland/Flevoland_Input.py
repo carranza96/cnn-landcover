@@ -20,7 +20,8 @@ class Flevoland_Input():
         trainingset = envi.open('Flevoland/Data/Flevoland.hdr',
                                 'Flevoland/Data/Flevoland.raw')
 
-        trainingset_gt = np.array(Image.open('Flevoland/Data/TrainingSet/cm3253_ground_truth_training.tiff'))
+        # trainingset_gt = np.array(Image.open('Flevoland/Data/TrainingSet/cm3253_ground_truth_training.tiff'))
+        trainingset_gt = envi.open('Flevoland/Data/Flevoland_gt_corrected.hdr','Flevoland/Data/Flevoland_gt_corrected.raw')
 
         # Dataset variables
         # Input data shape: (145,145,200)
@@ -37,7 +38,7 @@ class Flevoland_Input():
 
         # Obtain train data
         self.input_data = trainingset.load()
-        self.train_data = trainingset_gt
+        self.train_data = trainingset_gt.load().squeeze()
         self.padded_data = self.input_data
 
 

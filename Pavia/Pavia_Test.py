@@ -38,17 +38,17 @@ config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = 'Pavia/'
-oversampling = False
+oversampling = True
 rotation_oversampling = True
 validation_set = False
 
 
-file = open(folder + "resultados" + str(config['train_dropout']) + ".txt", "w+")
+file = open(folder + "resultados.txt", "w+")
 
 print("Patch size:" + str(config['patch_size']))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(config['patch_size']) + "\n")
-log_dir = folder + "resultados0.8/ps" + str(config['patch_size']) + "/"
+log_dir = folder + "resultados/ps" + str(config['patch_size']) + "/"
 config['log_dir'] = log_dir
 
 a = time.time()
@@ -62,11 +62,13 @@ if validation_set:
     X_train, X_val, y_train, y_val = \
         train_test_split(X_train, y_train, test_size=0.5, random_state=42, stratify=y_train)
 
+if oversampling:
+    X_train, y_train = input.oversample_data(X_train, y_train, config['patch_size'])
+
 if rotation_oversampling:
     X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
-if oversampling:
-    X_train, y_train = input.oversample_data(X_train, y_train, config['patch_size'])
+
 
 
 

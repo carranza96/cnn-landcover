@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 input = IndianPines_Input.IndianPines_Input()
 
-img = envi.open('IndianPines/resultados/ps5/ps5.hdr', 'IndianPines/resultados/ps5/ps5.raw')
+img = envi.open('IndianPines/resultados/ps5/ps5.hdr', 'IndianPines/resultados/ps5/ps5_4rot_93.54.raw')
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]

@@ -100,7 +100,7 @@ class IndianPines_Input():
 
 
     # Read patches
-    def read_data(self, patch_size, rotation_oversampling=False, conv3d=False):
+    def read_data(self, patch_size, conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -147,9 +147,6 @@ class IndianPines_Input():
         X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
         y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
 
-
-        if rotation_oversampling:
-            X_train, y_train = self.rotation_oversampling(X_train, y_train)
 
 
 

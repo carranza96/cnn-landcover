@@ -6,14 +6,14 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 input = Flevoland_Input.Flevoland_Input()
-img = envi.open('Flevoland/resultadosError/ps3/ps3.hdr', 'Flevoland/resultadosError/ps3/ps3.raw').load()
+img = envi.open('Flevoland/mejor_resultado_ps3/ps3.hdr', 'Flevoland/mejor_resultado_ps3/ps3.raw').load()
 
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
 
 def mode_filter(img):
-    return ndimage.generic_filter(img, modal, size=3)
+    return ndimage.generic_filter(img, modal, size=5)
 
 
 def output_image(input, output):
@@ -27,23 +27,23 @@ view = output_image(input, img)
 imshow(view)
 
 
-# print("---------------")
-# print("Modal filter")
-# filt_img = img
-#
-# for n in range(5):
-#     print("---------------")
-#     print("Iteration " + str(n))
-#     filt_img = mode_filter(filt_img)
-#
-#
-#     view = output_image(input, filt_img)
-#     fig = plt.figure(n+2)
-#     lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
-#     imshow(view, fignum=n+2)
-#     fig.savefig("Flevoland/filt3_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
-#
-#
-#
-# envi.save_image("Flevoland/flevoland_filtro3_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+print("---------------")
+print("Modal filter")
+filt_img = img
+
+for n in range(5):
+    print("---------------")
+    print("Iteration " + str(n))
+    filt_img = mode_filter(filt_img)
+
+
+    view = output_image(input, filt_img)
+    fig = plt.figure(n+2)
+    lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
+    imshow(view, fignum=n+2)
+    fig.savefig("Flevoland/filt5_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+
+
+
+envi.save_image("Flevoland/flevoland_filtro5_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

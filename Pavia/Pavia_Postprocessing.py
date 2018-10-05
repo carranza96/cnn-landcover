@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 input = Pavia_Input.Pavia_Input()
 #img = envi.open("pavia.hdr", "pavia.raw")
-img = envi.open('Pavia/resultados0.8/ps5/ps5.hdr', 'Pavia/resultados0.8/ps5/ps5.raw').load()
+img = envi.open('Pavia/resultados/ps5/ps5.hdr', 'Pavia/resultados/ps5/ps5.raw').load()
 # img = np.pad(img, ((0, 0), (0, 270), (0,0)), 'constant', constant_values=0)
 # envi.save_image("pavia.hdr", img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 
@@ -111,7 +111,7 @@ view = output_image(input, filt_img)
 fig = plt.figure(1)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=1)
-fig.savefig("Pavia/filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("Pavia/filt3_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 
@@ -120,7 +120,7 @@ view = output_image(input, clean_img)
 fig = plt.figure(2)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=2)
-fig.savefig("Pavia/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("Pavia/filt3_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
-envi.save_image("Pavia/pavia_filtro3_10it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+envi.save_image("Pavia/pavia_filtro5_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

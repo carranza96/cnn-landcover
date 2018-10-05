@@ -13,10 +13,10 @@ class Input2018():
     def __init__(self):
 
         # Load dataset
-        trainingset = envi.open('IEEEContest/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.hdr',
-                                'IEEEContest/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.pix')
-        trainingset_gt = envi.open('IEEEContest/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR.hdr',
-                                   'IEEEContest/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR')
+        trainingset = envi.open('IEEEContest2018/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.hdr',
+                                'IEEEContest2018/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.pix')
+        trainingset_gt = envi.open('IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR.hdr',
+                                   'IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR')
         # Dataset variables
         # Input data shape: (145,145,200)
         self.height = trainingset.nrows
@@ -24,8 +24,8 @@ class Input2018():
         self.bands = trainingset.nbands
         self.num_pixels = self.height * self.width
 
-        self.num_classes = 20
-        # self.class_names = trainingset_gt.metadata['class names'][1:]
+        self.num_classes = int(trainingset_gt.metadata['classes']) - 1
+        self.class_names = trainingset_gt.metadata['class names'][1:]
 
         # Complete ground truth
         # self.complete_gt = self.convert_gt(scipy.io.loadmat("IndianPines/Data/Indian_pines_gt.mat")['indian_pines_gt'])
@@ -46,10 +46,10 @@ class Input2018():
         # self.test_pixels = np.count_nonzero(self.test_data)
 
         # Color scale to display image
-        # class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
-        # class_colors = class_colors.reshape((int(class_colors.size/3), 3))
+        class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
+        class_colors = class_colors.reshape((int(class_colors.size/3), 3))
 
-        # self.color_scale = ColorScale([x for x in range(class_colors.shape[0])], class_colors)
+        self.color_scale = ColorScale([x for x in range(class_colors.shape[0])], class_colors)
 
 
 

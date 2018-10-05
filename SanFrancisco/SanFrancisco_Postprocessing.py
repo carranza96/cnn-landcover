@@ -6,7 +6,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 input = SanFrancisco_Input.SanFrancisco_Input()
-img = envi.open('SanFrancisco/mejor_resultado_sinRot/ps5.hdr', 'SanFrancisco/mejor_resultado_sinRot/ps5.raw').load()
+img = envi.open('SanFrancisco/mejor_resultado_sinRot/ps5.hdr', 'SanFrancisco/mejor_resultado_sinRot/ps5_4rot_93.54.raw').load()
 
 
 def modal(x):

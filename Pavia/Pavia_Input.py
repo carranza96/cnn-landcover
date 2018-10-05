@@ -164,7 +164,7 @@ class Pavia_Input():
     def oversample_data(self, X, y, patch_size):
         print("Oversampling")
         # ros = SMOTE(random_state=41)
-        ros = RandomOverSampler(random_state=41)
+        ros = RandomOverSampler(ratio={6: 1000}, random_state=41)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
         print('Resampled dataset shape {}'.format(Counter(y)))
@@ -192,7 +192,7 @@ class Pavia_Input():
                 X = X_split[i]  # Your image or batch of images
                 y = y_split[i]
                 for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
-                # for degree_angle in [90, 180, 270]:
+                # for degree_angle in [45, 90, 180, 270]:
                     radian = degree_angle * math.pi / 180
                     tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)

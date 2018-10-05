@@ -17,4 +17,4 @@ class lookup = {
    0, 255, 255, 255,   0, 255, 176,  48,  96,  46, 139,  87, 160,  32, 240,
  255, 127,  80, 127, 255, 212, 218, 112, 214, 160,  82,  45, 127, 255,   0}
 class names = {Unclassified, Rapeseed, Potato, Barley, Maize, Lucerne , Flax, Peas, Fruit,
-Beans, Wheat, Beet, Grass, Oats, Onions}
+Beans, Wheat, Beet, Grass, Oats}
