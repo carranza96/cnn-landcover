@@ -164,7 +164,7 @@ class IndianPines_Input():
     def oversample_data(self, X, y, patch_size):
         print("Oversampling")
         # ros = SMOTE(random_state=41)
-        ros = RandomOverSampler(ratio={11: 400}, random_state=None)
+        ros = RandomOverSampler(ratio={10: 400}, random_state=None)
         X, y = ros.fit_sample(X.reshape(len(X), patch_size * patch_size * self.bands), y)
         X = X.reshape(len(X), patch_size, patch_size, self.bands)
         print('Resampled dataset shape {}'.format(Counter(y)))
