@@ -50,7 +50,7 @@ validation_set = False
 
 file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [3]:
+for patch_size in [5]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -59,8 +59,8 @@ for patch_size in [3]:
 
     a = time.time()
 
-    X, y = input.read_data(config['patch_size'])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+    X, y = input.read_train_data(config['patch_size'])
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.001, random_state=None)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 

@@ -38,6 +38,8 @@ def decode(input, config, model_ckp):
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
+        padded_image = np.pad(input.resized_image, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
+
         for i in range(input.height):
             col_patches = []
             # col_labels = []
@@ -49,7 +51,7 @@ def decode(input, config, model_ckp):
                 # if is_train:
                 #     label = input.train_data[i, j]
 
-                patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
+                patch = input.Patch(padded_image, patch_size, i+dist_border, j+dist_border)
                 col_patches.append(patch)
                 # patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
                 # predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1, phase_train: False})

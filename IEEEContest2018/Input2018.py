@@ -7,46 +7,74 @@ from spectral import ColorScale
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 import math
 import tensorflow as tf
+import cv2
 
 class Input2018():
 
     def __init__(self):
 
         # Load dataset
-        trainingset = envi.open('IEEEContest2018/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.hdr',
+        self.image = envi.open('IEEEContest2018/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.hdr',
                                 'IEEEContest2018/Phase2/FullHSIDataset/20170218_UH_CASI_S4_NAD83.pix')
-        trainingset_gt = envi.open('IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR.hdr',
-                                   'IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR')
+
+        # Change resolution from 1m GSD to 0.5m GSD
+        self.resized_image = cv2.resize(self.image.load(), None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+
+
         # Dataset variables
-        # Input data shape: (145,145,200)
-        self.height = trainingset.nrows
-        self.width = trainingset.ncols
-        self.bands = trainingset.nbands
+        self.height = self.resized_image.shape[0]
+        self.width = self.resized_image.shape[1]
+        self.bands = self.resized_image.shape[2]
         self.num_pixels = self.height * self.width
 
-        self.num_classes = int(trainingset_gt.metadata['classes']) - 1
-        self.class_names = trainingset_gt.metadata['class names'][1:]
+        # Normalize input using MinMaxScaler (values between 0 and 1)
+        scaler = MinMaxScaler()
+        # Scale: array-like, shape [n_samples, n_features]
+        # Flatten input to (145*145,200)
+        flat_input = self.resized_image.reshape(self.num_pixels, self.bands).astype(float)
+        scaled_input = scaler.fit_transform(flat_input)
+        # Return to original shape
+        self.resized_image = scaled_input.reshape(self.height, self.width, self.bands)
 
-        # Complete ground truth
-        # self.complete_gt = self.convert_gt(scipy.io.loadmat("IndianPines/Data/Indian_pines_gt.mat")['indian_pines_gt'])
+
+
+        self.trainingset_gt = envi.open('IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR.hdr',
+                                        'IEEEContest2018/Phase2/TrainingGT/2018_IEEE_GRSS_DFC_GT_TR')
+
+        # Training data variables
+        self.train_height = self.trainingset_gt.nrows
+        self.train_width = self.trainingset_gt.ncols
+        self.train_num_pixels = self.train_height * self.train_width
+
+
+        x_start_train = int(float(self.trainingset_gt.metadata['map info'][3]) - float(self.image.metadata['map info'][3]))*2
+        y_start_train = int(float(self.image.metadata['map info'][4]) - float(self.trainingset_gt.metadata['map info'][4]))*2
+        self.trainingset = self.resized_image[x_start_train:x_start_train + self.train_height,
+                           y_start_train: y_start_train + self.train_width, :]
+
+
+
+
+        self.num_classes = int(self.trainingset_gt.metadata['classes']) - 1
+        self.class_names = self.trainingset_gt.metadata['class names'][1:]
+
 
         # Obtain train data
-        self.input_data = trainingset.load()
-        self.train_data = trainingset_gt.load().squeeze()
+        self.input_data = self.trainingset
+        self.train_data = self.trainingset_gt.load().squeeze()
         self.padded_data = self.input_data
 
 
 
-        # Obtain test data by comparing training set to complete ground truth
-        # self.test_data = self.get_test_data()
 
 
         # Store number of pixels training/test
         self.train_pixels = np.count_nonzero(self.train_data)
-        # self.test_pixels = np.count_nonzero(self.test_data)
+
 
         # Color scale to display image
-        class_colors = np.asarray(trainingset_gt.metadata['class lookup'], dtype=int)
+        class_colors = np.asarray(self.trainingset_gt.metadata['class lookup'], dtype=int)
         class_colors = class_colors.reshape((int(class_colors.size/3), 3))
 
         self.color_scale = ColorScale([x for x in range(class_colors.shape[0])], class_colors)
@@ -54,7 +82,7 @@ class Input2018():
 
 
     # Function for obtaining patches
-    def Patch(self, patch_size, i, j, pad=False):
+    def Patch(self, input_data, patch_size, i, j):
         """
         :param i: row index of center of the image patch
         :param j: column index of the center of the image patch
@@ -62,40 +90,27 @@ class Input2018():
         """
         # For every pixel we get 200(number of bands) mini-images (patches) of size 3x3,5x5,... (PATCH_SIZE)
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
-        if pad:
-            return self.padded_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
-        else:
-            return self.input_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
+        return input_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
 
 
 
     # Read patches
-    def read_data(self, patch_size, conv3d=False):
-        """
-        Function for reading and processing the Indian Pines Dataset
-        :return: Processed dataset after collecting classified patches
-        """
+    def read_train_data(self, patch_size, pad=True):
 
-        # Normalize input using MinMaxScaler (values between 0 and 1)
-        scaler = MinMaxScaler()
-        # Scale: array-like, shape [n_samples, n_features]
-        # Flatten input to (145*145,200)
-        flat_input = self.input_data.reshape(self.num_pixels, self.bands).astype(float)
-        scaled_input = scaler.fit_transform(flat_input)
-        # Return to original shape
-        self.input_data = scaled_input.reshape(self.height, self.width, self.bands)
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
         # Pad data to deal with border pixels
-        self.padded_data = np.pad(self.input_data, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
+        input_data = self.input_data
+        if pad:
+            input_data = np.pad(self.input_data, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
 
         # Collect patches of classified pixels
         train_patches, train_labels = [], []
 
-        for i in range(self.height):
-            for j in range(self.width):
-                patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
+        for i in range(self.train_height):
+            for j in range(self.train_width):
+                patch = self.Patch(input_data, patch_size, i + dist_border, j + dist_border)
                 label = self.train_data[i, j]
 
                 if label != 0:  # Ignore patches with unknown landcover type for the central pixel
@@ -105,18 +120,20 @@ class Input2018():
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X_train = np.asarray(train_patches, dtype=float)
-        y_train = np.asarray(train_labels, dtype=int)
+        X = np.asarray(train_patches, dtype=float)
+        y = np.asarray(train_labels, dtype=int)
 
 
-        # For 3D shape must be 5D Tensor
-        # [num_examples, in_depth, in_height, in_width, in_channels(1)]
-        if conv3d:
-            X_train = np.transpose(X_train, axes=(0, 3, 1, 2))
-            # [num_examples, in_depth, in_height, in_width] Need one more dimension
-            X_train= np.expand_dims(X_train, axis=4)
+        return X, y
 
-        return X_train, y_train
+
+
+
+
+
+
+
+
 
 
 
