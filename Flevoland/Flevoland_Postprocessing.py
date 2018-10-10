@@ -6,7 +6,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 input = Flevoland_Input.Flevoland_Input()
-img = envi.open('Flevoland/mejor_resultado_ps3/ps3.hdr', 'Flevoland/mejor_resultado_ps3/ps3.raw').load()
+img = envi.open('Flevoland/mejor_resultado_ps3/ps3_subido.hdr', 'Flevoland/mejor_resultado_ps3/ps3_subido.raw').load()
 
 
 def modal(x):

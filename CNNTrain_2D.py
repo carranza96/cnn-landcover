@@ -210,7 +210,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
                 print('---------------')
                 print('Epoch %d. test accuracy %g' % (epoch, test_accuracy*100))
                 print('---------------\n')
-
+                saver.save(sess, log_dir + 'checkpoints/model-' + str(patch_size) + '-epoch'+ str(epoch) + '.ckpt')
 
 
         # Final evaluation of the test set

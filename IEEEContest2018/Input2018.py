@@ -153,8 +153,8 @@ class Input2018():
         print("Rotating patches")
 
         # Split to avoid out of mem error
-        X_split = np.split(X_train, [2000, 4000])
-        y_split = np.split(y_train, [2000, 4000])
+        X_split = np.split(X_train, [i * 3000 for i in range(int(len(X_train) / 3000))])
+        y_split = np.split(y_train, [i * 3000 for i in range(int(len(X_train) / 3000))])
 
         for i in range(len(X_split)):
 
@@ -167,8 +167,8 @@ class Input2018():
 
                 X = X_split[i]  # Your image or batch of images
                 y = y_split[i]
-                for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
-                # for degree_angle in [90, 180, 270]:
+                # for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                for degree_angle in [90, 180, 270]:
                     radian = degree_angle * math.pi / 180
                     tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)

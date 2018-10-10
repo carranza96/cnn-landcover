@@ -42,7 +42,7 @@ config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IEEEContest2018/'
 oversampling = False
-rotation_oversampling = False
+rotation_oversampling = True
 validation_set = False
 
 
@@ -60,9 +60,9 @@ for patch_size in [5]:
     a = time.time()
 
     X, y = input.read_train_data(config['patch_size'])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.001, random_state=None)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.7, random_state=None, stratify=y)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
-
+    del X,y
 
     if validation_set:
         X_train, X_val, y_train, y_val = \
