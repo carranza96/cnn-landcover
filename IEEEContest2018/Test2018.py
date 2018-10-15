@@ -42,13 +42,13 @@ config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IEEEContest2018/'
 oversampling = False
-rotation_oversampling = True
+rotation_oversampling = False
 validation_set = False
 
 
 
 
-file = open(folder + "resultados.txt", "w+")
+file = open(folder + "resultados9.txt", "w+")
 
 for patch_size in [9]:
 
@@ -59,10 +59,14 @@ for patch_size in [9]:
 
     a = time.time()
 
-    X, y = input.read_train_data(config['patch_size'])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.7, random_state=None, stratify=y)
+    # X, y = input.read_train_data(config['patch_size'])
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.7, random_state=37, stratify=y)
+
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
-    del X, y
+    # del X, y
+
+    X_train, y_train = input.read_train_data(config['patch_size'])
+    X_test, y_test = X_train[:2000], y_train[:2000]
 
     if validation_set:
         X_train, X_val, y_train, y_val = \
@@ -124,7 +128,10 @@ for patch_size in [9]:
         # Clear memory
         del X_train, X_test, y_train, y_test
 
-    train_acc, test_acc = 0, 0
+
+    train_acc = 0
+
+
 
     # Decode result
     raw = Decoder.decode(input, config, save_path)

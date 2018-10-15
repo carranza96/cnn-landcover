@@ -182,8 +182,8 @@ def loss(logits, labels):
   # labels = tf.one_hot(indices=tf.cast(labels, tf.int64), depth=number_of_classes)
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
   labels=labels, logits=logits, name='cross_entropy')
-  if math.isnan(cross_entropy):
-      cross_entropy= math.log(0.000000000001)
+  # if math.isnan(cross_entropy):
+  #     cross_entropy= math.log(0.000000000001)
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
   return cross_entropy_mean
