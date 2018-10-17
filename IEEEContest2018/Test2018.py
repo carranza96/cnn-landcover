@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from sklearn.model_selection import train_test_split
+from imblearn.under_sampling import EditedNearestNeighbours,NearMiss
 
 
 def make_hparam_string(patch_size):
@@ -27,7 +28,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 9
+config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -42,7 +43,7 @@ config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IEEEContest2018/'
 oversampling = False
-rotation_oversampling = False
+rotation_oversampling = True
 validation_set = False
 
 
@@ -50,7 +51,7 @@ validation_set = False
 
 file = open(folder + "resultados9.txt", "w+")
 
-for patch_size in [9]:
+for patch_size in [5]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -66,7 +67,24 @@ for patch_size in [9]:
     # del X, y
 
     X_train, y_train = input.read_train_data(config['patch_size'])
-    X_test, y_test = X_train[:2000], y_train[:2000]
+    X_test,y_test = X_train[:1000], y_train[:1000]
+
+## Undersampling
+    # X, y = input.read_train_data(config['patch_size'])
+    #
+    # X_reshaped = X.reshape(X.shape[0], patch_size * patch_size * input.bands)
+    # print(sorted(Counter(y).items()))
+    #
+    #
+    # nm = NearMiss(version=3, n_jobs=8)
+    # X_train, y_train = nm.fit_resample(X_reshaped, y)
+    # X_train = X_train.reshape(X_train.shape[0], patch_size, patch_size, input.bands)
+    # print(sorted(Counter(y_train).items()))
+    #
+    #
+    # X_test, y_test = np.delete(X,nm.sample_indices_,axis=0)[:50000], np.delete(y,nm.sample_indices_, axis=0)[:50000]
+    # del X,y
+
 
     if validation_set:
         X_train, X_val, y_train, y_val = \

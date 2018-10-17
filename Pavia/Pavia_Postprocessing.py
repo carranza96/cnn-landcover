@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 input = Pavia_Input.Pavia_Input()
 #img = envi.open("pavia.hdr", "pavia.raw")
-img = envi.open('Pavia/mejor_resultado_ps5/ps5.hdr', 'Pavia/mejor_resultado_ps5/ps5_4rot_93.54.raw').load()
+img = envi.open('Pavia/resultados/ps3/ps3.hdr', 'Pavia/resultados/ps3/ps3.raw').load()
 # img = np.pad(img, ((0, 0), (0, 270), (0,0)), 'constant', constant_values=0)
 # envi.save_image("pavia.hdr", img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

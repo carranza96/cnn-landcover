@@ -9,6 +9,7 @@ from spectral import imshow
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from imblearn.under_sampling import EditedNearestNeighbours
 
 
 
@@ -24,7 +25,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 5
+config['patch_size'] = 3
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -32,13 +33,14 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 50
+config['max_epochs'] = 100
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = 'Pavia/'
-oversampling = True
+undersampling = False
+oversampling = False
 rotation_oversampling = True
 validation_set = False
 
@@ -69,7 +71,13 @@ if rotation_oversampling:
     X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
 
-
+if undersampling:
+    X_reshaped = X_train.reshape(X_train.shape[0], config['patch_size'] * config['patch_size'] * input.bands)
+    print(sorted(Counter(y_train).items()))
+    enn = EditedNearestNeighbours(n_jobs=8)
+    X_train, y_train = enn.fit_resample(X_reshaped, y_train)
+    X_train = X_train.reshape(X_train.shape[0], config['patch_size'], config['patch_size'], input.bands)
+    print(sorted(Counter(y_train).items()))
 
 
 print('Start training')
