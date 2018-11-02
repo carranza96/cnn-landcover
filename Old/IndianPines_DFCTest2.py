@@ -51,7 +51,7 @@ for patch_size in [3,5,7,9]:#[1,3,5,9,15,21,25,31]:
     config['log_dir'] = log_dir + make_hparam_string(config['patch_size'])
 
     a = time.time()
-    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'], oversampling=False)
+    X_train, y_train, X_test, y_test = input.read_train_test_data(config['patch_size'], oversampling=False)
 
     X_train, X_val, y_train, y_val = \
         train_test_split(X_train, y_train, test_size=0.5, random_state=42, stratify=y_train)

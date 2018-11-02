@@ -3,8 +3,7 @@ import CNNModel_2D as CNNModel_2D
 import numpy as np
 from spectral import get_rgb
 
-
-def decode(input, config, model_ckp):
+def decode(input, config, train_indices, test_indices, model_ckp):
 
     patch_size = config['patch_size']
     kernel_size = config['kernel_size']
@@ -37,18 +36,21 @@ def decode(input, config, model_ckp):
         correct_pixels_train, correct_pixels_test = [], []
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
+        index = 0
 
         for i in range(input.height):
             for j in range(input.width):
 
                 label = 0
-                is_train = input.train_data[i, j] != 0
-                is_test = input.test_data[i, j] != 0
+                is_train = index in train_indices
+                is_test = index in test_indices
 
                 if is_train:
-                    label = input.train_data[i, j]
+                    label = input.complete_gt[i, j]
+                    index += 1
                 elif is_test:
-                    label = input.test_data[i, j]
+                    label = input.complete_gt[i, j]
+                    index += 1
 
                 # if label != 0:
                 patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
@@ -67,6 +69,9 @@ def decode(input, config, model_ckp):
                         correct_pixels_train.append(0)
                     elif is_test:
                         correct_pixels_test.append(0)
+
+        print(len(correct_pixels_train))
+        print(len(correct_pixels_test))
 
         train_acc = np.asarray(correct_pixels_train).mean()*100
         test_acc = np.asarray(correct_pixels_test).mean()*100

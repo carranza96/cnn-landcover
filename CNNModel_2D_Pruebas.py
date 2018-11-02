@@ -43,6 +43,9 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
     # Input Layer
     # Reshape X to 4-D tensor:  [batch_size, width, height, channels]
     # Last dimension is for "features" - there are 200 (in_channels)
+    fc2_units = 512
+    conv3_channels = 128
+
     with tf.name_scope('reshape'):
         x_image = tf.reshape(images, [-1, patch_size, patch_size, in_channels])
 
@@ -65,7 +68,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
 
     with tf.name_scope('bn2'):
         h_bn2 = batch_norm(h_conv1, phase_train)
-    #
+
 
     # Pooling layer #1
     # Downsamples by 2X.
@@ -89,16 +92,33 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
     #
-    with tf.name_scope('bn4'):
-        h_bn4 = batch_norm(h_conv2, phase_train)
-
+    # with tf.name_scope('bn4'):
+    #     h_bn4 = batch_norm(h_conv2, phase_train)
+    #
 
     # Pooling layer #2
     # Input Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv2_channels]
     # Output Tensor Shape: [batch_size, patch_size/4 , patch_size/4 , conv2_channels]
     with tf.name_scope('pool2'):
-        h_pool2 = max_pool_2x2(h_bn4)
+        h_pool2 = max_pool_2x2(h_conv2)
 
+
+
+    with tf.name_scope('conv3'):
+        W_conv3 = weight_variable([kernel_size, kernel_size, conv2_channels, conv3_channels])
+        b_conv3 = bias_variable([conv3_channels])
+        h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
+
+    # #
+    # with tf.name_scope('bn4'):
+    #     h_bn5 = batch_norm(h_conv3, phase_train)
+
+
+    # Pooling layer #2
+    # Input Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv2_channels]
+    # Output Tensor Shape: [batch_size, patch_size/4 , patch_size/4 , conv2_channels]
+    with tf.name_scope('pool3'):
+        h_pool3 = max_pool_2x2(h_conv3)
 
 
     # Fully connected layer 1 (Dense layer)
@@ -107,25 +127,32 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
     # Input Tensor Shape: [batch_size, (patch_size/4)*(patch_size/4)*conv2_channels]
     # Output Tensor Shape: [batch_size, fc1_units]
     with tf.name_scope('fc1'):
-        size_after_pools = math.ceil(patch_size/4) # Padding = SAME
-        W_fc1 = weight_variable([size_after_pools * size_after_pools * conv2_channels, fc1_units])
+        size_after_pools = math.ceil(patch_size/8) # Padding = SAME
+        W_fc1 = weight_variable([size_after_pools * size_after_pools * conv3_channels, fc1_units])
         b_fc1 = bias_variable([fc1_units])
 
-        h_pool2_flat = tf.reshape(h_pool2, [-1, size_after_pools * size_after_pools * conv2_channels])
-        h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+        h_pool3_flat = tf.reshape(h_pool3, [-1, size_after_pools * size_after_pools * conv3_channels])
+        h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, W_fc1) + b_fc1)
+
+
+    with tf.name_scope('fc2'):
+        W_fc2 = weight_variable([fc1_units, fc2_units])
+        b_fc2 = bias_variable([fc2_units])
+
+        h_fc2 = tf.nn.relu(tf.matmul(h_fc1, W_fc2) + b_fc2)
 
     # Dropout - controls the complexity of the model, prevents co-adaptation of
     # features.
     with tf.name_scope('dropout'):
         keep_prob = tf.placeholder(tf.float32)
-        h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+        h_fc1_drop = tf.nn.dropout(h_fc2, keep_prob)
 
     # Readout Logits Layer
     # Map the fc1_units features to the number of classes of the problem
     # Input Tensor Shape: [batch_size, fc1_units]
     # Output Tensor Shape: [batch_size, num_clasess]
     with tf.name_scope('softmax_linear'):
-        W_fc2 = weight_variable([fc1_units, number_of_classes])
+        W_fc2 = weight_variable([fc2_units, number_of_classes])
         b_fc2 = bias_variable([number_of_classes])
         logits = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 

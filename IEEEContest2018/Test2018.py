@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from sklearn.model_selection import train_test_split
-from imblearn.under_sampling import EditedNearestNeighbours,NearMiss
+from imblearn.under_sampling import EditedNearestNeighbours,NearMiss,RandomUnderSampler
 
 
 def make_hparam_string(patch_size):
@@ -28,7 +28,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 5
+config['patch_size'] = 7
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -42,6 +42,7 @@ config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IEEEContest2018/'
+undersampling = True
 oversampling = False
 rotation_oversampling = True
 validation_set = False
@@ -49,9 +50,9 @@ validation_set = False
 
 
 
-file = open(folder + "resultados9.txt", "w+")
+file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [5]:
+for patch_size in [15]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -66,25 +67,31 @@ for patch_size in [5]:
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
     # del X, y
 
-    X_train, y_train = input.read_train_data(config['patch_size'])
-    X_test,y_test = X_train[:1000], y_train[:1000]
+    # X_train, y_train = input.read_train_data(config['patch_size'])
 
-## Undersampling
-    # X, y = input.read_train_data(config['patch_size'])
-    #
-    # X_reshaped = X.reshape(X.shape[0], patch_size * patch_size * input.bands)
-    # print(sorted(Counter(y).items()))
-    #
-    #
-    # nm = NearMiss(version=3, n_jobs=8)
-    # X_train, y_train = nm.fit_resample(X_reshaped, y)
-    # X_train = X_train.reshape(X_train.shape[0], patch_size, patch_size, input.bands)
-    # print(sorted(Counter(y_train).items()))
-    #
-    #
-    # X_test, y_test = np.delete(X,nm.sample_indices_,axis=0)[:50000], np.delete(y,nm.sample_indices_, axis=0)[:50000]
-    # del X,y
 
+    if undersampling:
+        X, y = input.read_data(patch_size=1)
+        X_reshaped = X.reshape(X.shape[0], input.bands)
+        print("Elements before undersampling: %i" % len(X))
+        print(sorted(Counter(y).items()))
+        # enn = RandomUnderSampler(sampling_strategy={0:10000,1:15000,3:10000,4:10000,5:10000,7:15000,8:20000,9:10000, 10:10000, 12:10000,13:10000,
+        #                                             14:10000,15:10000,17:10000,18:10000,19:10000},random_state=0)
+        enn = RandomUnderSampler(
+            sampling_strategy={0: 8000, 1: 8000, 3: 6000, 4: 6000, 5: 6000, 7: 8000, 8: 7000, 9: 6000,
+                               10: 6000, 12: 6000, 13: 6000,
+                               14: 6000, 15: 6000, 17: 6000, 18: 6000, 19: 6000}, random_state=37)
+
+        enn.fit_resample(X_reshaped, y)
+        print("Elements after undersampling: %i" % len(enn.sample_indices_))
+        X_train, y_train, X_test, y_test = input.train_test_data(patch_size=config['patch_size'], train_indices = enn.sample_indices_)
+        # X_test, y_test = np.delete(X_train, enn.sample_indices_, axis=0), np.delete(y_train, enn.sample_indices_, axis=0)
+        # X_train, y_train = np.take(X_train, enn.sample_indices_, axis=0), np.take(y_train, enn.sample_indices_, axis=0)
+        print(sorted(Counter(y_train).items()))
+
+
+    else:
+        X_train, y_train = input.read_data(config['patch_size'])
 
     if validation_set:
         X_train, X_val, y_train, y_val = \
@@ -93,6 +100,7 @@ for patch_size in [5]:
 
     if oversampling:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
+
 
     if rotation_oversampling:
         X_train, y_train = input.rotation_oversampling(X_train, y_train)

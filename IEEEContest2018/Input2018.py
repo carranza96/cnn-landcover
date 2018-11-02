@@ -91,16 +91,15 @@ class Input2018():
         return input_data[i - dist_border: i + dist_border + 1, j - dist_border: j + dist_border + 1, :]
 
 
-
-    # Read patches
-    def read_train_data(self, patch_size, pad=True):
+    def read_data(self, patch_size, train_indices=None, pad=True):
 
         dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
 
         # Pad data to deal with border pixels
         input_data = self.trainingset
         if pad:
-            input_data = np.pad(self.trainingset, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
+            input_data = np.pad(self.trainingset, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)),
+                                'edge')
 
         # Collect patches of classified pixels
         train_patches, train_labels = [], []
@@ -115,13 +114,51 @@ class Input2018():
                     train_labels.append(label - 1)
 
 
+
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
         X = np.asarray(train_patches, dtype=np.float32)
         y = np.asarray(train_labels, dtype=int)
 
-
         return X, y
+
+
+    # Read patches
+    def train_test_data(self, patch_size, train_indices=None, pad=True):
+
+        dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
+
+        # Pad data to deal with border pixels
+        input_data = self.trainingset
+        if pad:
+            input_data = np.pad(self.trainingset, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
+
+        # Collect patches of classified pixels
+        train_patches, train_labels, test_patches, test_labels = [], [], [], []
+        index = 0
+        for i in range(self.train_height):
+            for j in range(self.train_width):
+                patch = self.Patch(input_data, patch_size, i + dist_border, j + dist_border)
+                label = self.train_data[i, j]
+
+                if label != 0:  # Ignore patches with unknown landcover type for the central pixel
+                    if index in train_indices:
+                        train_patches.append(patch)
+                        train_labels.append(label - 1)
+                    else:
+                        if len(test_patches)<1000:
+                            test_patches.append(patch)
+                            test_labels.append(label - 1)
+                    index += 1
+
+
+        # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
+        # Final processed dataset: X,y
+        X_train,X_test = np.asarray(train_patches, dtype=np.float32), np.asarray(test_patches, dtype=np.float32)
+        y_train,y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=int)
+
+
+        return X_train, y_train, X_test,y_test
 
 
 

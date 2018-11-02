@@ -28,7 +28,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 9
+config['patch_size'] = 3
 config['in_depth'] = input.bands
 config['in_channels'] = 1
 config['num_classes'] = input.num_classes
@@ -39,7 +39,7 @@ config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
 config['max_epochs'] = 50
-config['train_dropout'] = 0.5
+config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
@@ -53,7 +53,7 @@ validation_set = False
 
 file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [5]:
+for patch_size in [3]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size
@@ -62,9 +62,7 @@ for patch_size in [5]:
 
     a = time.time()
 
-    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'],
-                                                       rotation_oversampling=rot_oversampling,
-                                                       conv3d=True)
+    X_train, y_train, X_test, y_test = input.read_train_test_data(config['patch_size'], rot_oversampling=rot_oversampling, conv3d=True)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
     print(X_train.shape)
 

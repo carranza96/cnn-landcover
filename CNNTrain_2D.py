@@ -139,7 +139,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
 
         # Eval test
         def eval_test_set(step, conf_matrix=False):
-            final_test_accuracy, test_loss = 0,0
+            final_test_accuracy, test_loss = 0, 0
             y_pred, y_true = [], []
             for i in range(test_batch_num):
                 images_batch, labels_batch = test_data_buffer.next_batch(shuffle_data=False)

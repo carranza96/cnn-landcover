@@ -9,7 +9,7 @@ from spectral import imshow
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from imblearn.under_sampling import EditedNearestNeighbours
+from imblearn.under_sampling import EditedNearestNeighbours, CondensedNearestNeighbour
 
 
 
@@ -25,7 +25,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 3
+config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -64,20 +64,27 @@ if validation_set:
     X_train, X_val, y_train, y_val = \
         train_test_split(X_train, y_train, test_size=0.5, random_state=42, stratify=y_train)
 
+
+
+if undersampling:
+    X, y, _, _ = input.read_data(patch_size=1)
+    X_reshaped = X.reshape(X.shape[0], input.bands)
+    print("Elements before undersampling: %i" %len(X))
+    print(sorted(Counter(y).items()))
+    enn = CondensedNearestNeighbour(n_jobs=8)
+    enn.fit_resample(X_reshaped, y_train)
+    print("Elements after undersampling: %i" %len(enn.sample_indices_))
+    X_test, y_test = np.delete(X_train,enn.sample_indices_, axis=0), np.delete(y_train,enn.sample_indices_, axis=0)
+    X_train, y_train = np.take(X_train,enn.sample_indices_, axis=0), np.take(y_train,enn.sample_indices_, axis=0)
+    print(sorted(Counter(y_train).items()))
+
+
 if oversampling:
     X_train, y_train = input.oversample_data(X_train, y_train, config['patch_size'])
 
 if rotation_oversampling:
     X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
-
-if undersampling:
-    X_reshaped = X_train.reshape(X_train.shape[0], config['patch_size'] * config['patch_size'] * input.bands)
-    print(sorted(Counter(y_train).items()))
-    enn = EditedNearestNeighbours(n_jobs=8)
-    X_train, y_train = enn.fit_resample(X_reshaped, y_train)
-    X_train = X_train.reshape(X_train.shape[0], config['patch_size'], config['patch_size'], input.bands)
-    print(sorted(Counter(y_train).items()))
 
 
 print('Start training')

@@ -81,8 +81,8 @@ class IndianPines_Input():
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X = np.asarray(patches,dtype=float)
-        y = np.asarray(patches_labels,dtype=int)
+        X = np.asarray(patches, dtype=float)
+        y = np.asarray(patches_labels, dtype=int)
 
 
         # For 3D shape must be 5D Tensor
@@ -92,4 +92,4 @@ class IndianPines_Input():
             # [num_examples, in_depth, in_height, in_width] Need one more dimension
             X = np.expand_dims(X, axis=4)
 
-        return X,y
+        return X, y

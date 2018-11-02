@@ -35,14 +35,14 @@ config['kernel_size'] = 3
 config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
-config['batch_size'] = 8
+config['batch_size'] = 16
 config['max_epochs'] = 60
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = 'IndianPines/'
-oversampling = True
+oversampling = False
 rotation_oversampling = True
 validation_set = False
 
@@ -60,7 +60,7 @@ for patch_size in [5]:
 
     a = time.time()
 
-    X_train, y_train, X_test, y_test = input.read_data(config['patch_size'])
+    X_train, y_train, X_test, y_test = input.read_train_test_data(config['patch_size'])
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 

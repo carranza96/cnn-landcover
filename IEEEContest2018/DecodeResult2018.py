@@ -7,10 +7,10 @@ from spectral import imshow
 
 
 input = Input2018.Input2018()
-save_path = 'IEEEContest2018/resultados/ps5_4Rot/model-5.ckpt'
+save_path = 'IEEEContest2018/resultados/ps25/checkpoints/model-25-epoch40.ckpt'
 
 config = {}
-config['patch_size'] = 5
+config['patch_size'] = 25
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -23,7 +23,7 @@ config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-config['log_dir'] = 'IEEEContest2018/resultados/ps5_4Rot'
+config['log_dir'] = 'IEEEContest2018/resultados/ps25_2'
 patch_size = 5
 raw = Decoder.decode(input, config, save_path)
 
