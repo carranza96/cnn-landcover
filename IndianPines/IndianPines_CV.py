@@ -35,7 +35,7 @@ input = IndianPines_Input.IndianPines_Input()
 
 # Configurable parameters
 config = {}
-# config['patch_size'] = 15
+config['patch_size'] = 5
 config['kernel_size'] = 3
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
@@ -48,8 +48,10 @@ config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-
+folder = "IndianPines/CV_Final/ps" + str(config['patch_size']) + "/"
 rotation_oversampling = False
+
+cv_reports = []
 
 for i in range(5):
 
@@ -58,7 +60,7 @@ for i in range(5):
 
         print("Patch size:" + str(patch_size))
         config['patch_size'] = patch_size
-        log_dir = "IndianPines/CV_Final/ps" + str(patch_size) + "/" + str(i) + "/"
+        log_dir = folder + str(i) + "/"
         config['log_dir'] = log_dir
         os.makedirs(os.path.dirname(log_dir))
 
@@ -117,7 +119,7 @@ for i in range(5):
 
             accuracies.append(post_test_acc)
 
-            fold_acc = conf_matrix.stats_overall['Accuracy']
+            fold_oa = conf_matrix.stats_overall['Accuracy']
             fold_kappa = conf_matrix.stats_overall['Kappa']
             reports.append(conf_matrix.classification_report)
 
@@ -141,3 +143,11 @@ for i in range(5):
         file.write("Mean accuracy;" + "%.3f" % mean_acc + "\n\n")
 
         file.close()
+
+    cv_reports.append(avg_reports)
+
+concat_cv_reports = pd.concat(cv_reports).astype('float')
+avg_cv_reports = concat_cv_reports.groupby(concat_cv_reports.index).mean()
+avg_cv_reports.to_csv(folder + "10x5cv_report.csv")
+
+

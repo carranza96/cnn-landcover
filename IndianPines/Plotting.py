@@ -35,7 +35,7 @@ cm2 = ConfusionMatrix(y2, y2pred)
 cs1 = cm1.classification_report
 cs2 = cm2.classification_report
 
-df_concat = pd.concat((cs1,cs2))
+df_concat = pd.concat((cs1,cs2)).astype('float')
 
-# by_row_index = df_concat.groupby(df_concat.index)
-# df_means = by_row_index.mean()
+by_row_index = df_concat.groupby(df_concat.index)
+# df_means = by_row_index.meancs()
