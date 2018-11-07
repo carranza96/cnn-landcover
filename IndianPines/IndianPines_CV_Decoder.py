@@ -41,37 +41,31 @@ def decode(input, config, train_indices, test_indices, model_ckp):
         for i in range(input.height):
             for j in range(input.width):
 
-                label = 0
-                is_train = index in train_indices
-                is_test = index in test_indices
+                label = input.complete_gt[i, j]
+                if label != 0:
+                    is_train = index in train_indices
+                    is_test = index in test_indices
 
-                if is_train:
-                    label = input.complete_gt[i, j]
-                    index += 1
-                elif is_test:
-                    label = input.complete_gt[i, j]
-                    index += 1
+                    if is_train or is_test:
+                        index += 1
 
-                # if label != 0:
                 patch = input.Patch(patch_size, i+dist_border, j+dist_border, pad=True)
                 patch = np.expand_dims(patch, axis=0)  # Shape [-1,patch_size,patch_size,in_channels]
                 predictions = sess.run(softmax, feed_dict={images_pl: patch, keep_prob: 1, phase_train: False})
                 y_ = np.argmax(predictions) + 1
                 predicted_image[i][j] = y_
 
-                if label == y_:
-                    if is_train:
-                        correct_pixels_train.append(1)
-                    elif is_test:
-                        correct_pixels_test.append(1)
-                else:
-                    if is_train:
-                        correct_pixels_train.append(0)
-                    elif is_test:
-                        correct_pixels_test.append(0)
-
-        print(len(correct_pixels_train))
-        print(len(correct_pixels_test))
+                if label != 0:
+                    if label == y_:
+                        if is_train:
+                            correct_pixels_train.append(1)
+                        elif is_test:
+                            correct_pixels_test.append(1)
+                    else:
+                        if is_train:
+                            correct_pixels_train.append(0)
+                        elif is_test:
+                            correct_pixels_test.append(0)
 
         train_acc = np.asarray(correct_pixels_train).mean()*100
         test_acc = np.asarray(correct_pixels_test).mean()*100

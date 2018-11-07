@@ -259,19 +259,17 @@ class IndianPines_Input():
     def train_test_images(self, train_index, test_index):
         img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
         index = 0
-
         for i in range(self.height):
             for j in range(self.width):
+                label = self.complete_gt[i, j]
+                if label != 0:
+                    if index in train_index:
+                        img_train[i, j] = self.complete_gt[i, j]
+                        index += 1
 
-                if index in train_index:
-                    img_train[i, j] = self.complete_gt[i, j]
-                    index += 1
+                    elif index in test_index:
+                        img_test[i, j] = self.complete_gt[i, j]
+                        index += 1
 
-                elif index in test_index:
-                    img_test[i, j] = self.complete_gt[i, j]
-                    index += 1
-
-        print("index", index)
-        # return get_rgb(img_train, color_scale=self.color_scale), get_rgb(img_test, color_scale=self.color_scale)
-        return img_train, img_test
+        return get_rgb(img_train, color_scale=self.color_scale), get_rgb(img_test, color_scale=self.color_scale)
 
