@@ -6,6 +6,9 @@ from sklearn.utils import shuffle
 import math
 from pandas_ml import ConfusionMatrix
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 input = IndianPines_Input.IndianPines_Input()
 
@@ -16,26 +19,18 @@ input = IndianPines_Input.IndianPines_Input()
 # imshow(img, fignum=1)
 
 X, y = input.read_data(5)
+X = X.reshape(len(X),5*5*220)
 
-indices = {c: np.where(y==c)[0] for c in range(input.num_classes)}
-
-groups = np.zeros(shape=y.shape)
-
-for c in indices.keys():
-    np.put(groups, indices[c], np.asarray([int(math.floor(i / 50)) + 1 for i in range(len(indices[c]))]))
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 
 
-y1, y1pred= [1,2,3,4,1,1],[1,2,2,2,3,4]
-y2, y2pred = [2,3,4,1,2,2],[4,4,2,1,3,3]
+clf = RandomForestClassifier(n_estimators=100, max_depth=2,random_state=0)
 
-cm1 = ConfusionMatrix(y1, y1pred)
-cm2 = ConfusionMatrix(y2, y2pred)
+clf.fit(X_train, y_train)
 
-cs1 = cm1.classification_report
-cs2 = cm2.classification_report
+y_pred = clf.predict(X_test)
 
-df_concat = pd.concat((cs1,cs2)).astype('float')
+acc = accuracy_score(y_test,y_pred)
 
-by_row_index = df_concat.groupby(df_concat.index)
-# df_means = by_row_index.meancs()
+print(acc)
