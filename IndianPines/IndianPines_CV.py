@@ -48,7 +48,7 @@ config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-folder = "IndianPines/CV_Final/ps" + str(config['patch_size']) + "/"
+folder = "IndianPines/CV_5x10/ps" + str(config['patch_size']) + "/"
 rotation_oversampling = True
 
 cv_reports = []

@@ -65,15 +65,14 @@ def clean_image(input, img):
 
             label = img[i, j]
 
-            if input.complete_gt[i,j] != 0:
+            if input.complete_gt[i, j] != 0:
                 clean[i, j] = label
 
 
     return clean
 
 
-
-def get_conf_matrix(input, img,train_index,test_index):
+def get_conf_matrix(input, img, train_index, test_index):
 
     test_labels, test_predictions = [], []
     index = 0
@@ -97,13 +96,10 @@ def get_conf_matrix(input, img,train_index,test_index):
 
     conf_matrix = ConfusionMatrix(test_labels, test_predictions)
 
-
     return conf_matrix
 
 
-
-
-def apply_modal_filter(input, img,train_index,test_index):
+def apply_modal_filter(input, img, train_index, test_index):
 
     filt_img = img
 
@@ -116,7 +112,7 @@ def apply_modal_filter(input, img,train_index,test_index):
         print("Training accuracy: %.2f" %train_acc)
         print("Test accuracy: %.2f" %test_acc)
 
-    clean_img = clean_image(input,filt_img)
+    clean_img = clean_image(input, filt_img)
     return clean_img, test_acc
 
 #

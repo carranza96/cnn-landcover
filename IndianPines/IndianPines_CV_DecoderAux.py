@@ -1,12 +1,24 @@
 import numpy as np
 from spectral import get_rgb
 
-def decode(input, train_indices, test_indices, clf):
+def decode(input, patch_size, train_indices, test_indices, clf):
 
-        patch_size = 1
-        X, y = input.read_data(patch_size)
-        X = X.reshape(len(X), -1)
-        y_pred = clf.predict(X)
+        # X, y = input.read_data(patch_size)
+        # X = X.reshape(len(X), -1)
+        # y_pred = clf.predict(X)
+
+        patches = []
+        dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
+
+
+        for i in range(input.height):
+            for j in range(input.width):
+                patch = input.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
+                patch = patch.reshape(1, -1)
+                patches.append(patch)
+
+        patches = np.asarray(patches).reshape(len(patches), -1)
+        y_pred = clf.predict(patches)
 
         predicted_image = np.zeros(shape=(input.height, input.width))
         correct_pixels_train, correct_pixels_test = [], []
@@ -16,11 +28,14 @@ def decode(input, train_indices, test_indices, clf):
         for i in range(input.height):
             for j in range(input.width):
 
-                label = input.complete_gt[i, j]
-                if label != 0:
-                    y_ = y_pred[index]
-                    predicted_image[i][j] = y_
+                y_ = y_pred[i*input.height + j] + 1
 
+                predicted_image[i][j] = y_
+
+                label = input.complete_gt[i, j]
+
+
+                if label != 0:
                     is_train = index in train_indices
                     is_test = index in test_indices
 
@@ -28,8 +43,6 @@ def decode(input, train_indices, test_indices, clf):
                         index += 1
 
 
-
-                if label != 0:
                     if label == y_:
                         if is_train:
                             correct_pixels_train.append(1)
@@ -41,8 +54,7 @@ def decode(input, train_indices, test_indices, clf):
                         elif is_test:
                             correct_pixels_test.append(0)
 
-        print(len(correct_pixels_train))
-        print(len(correct_pixels_test))
+
         train_acc = np.asarray(correct_pixels_train).mean()*100
         test_acc = np.asarray(correct_pixels_test).mean()*100
         return predicted_image, train_acc, test_acc
