@@ -22,15 +22,15 @@ from sklearn.feature_selection import SelectFromModel
 input = IndianPines_Input.IndianPines_Input()
 
 # Configurable parameters
-patch_size = 5
+patch_size = 3
 seed = None
 folder = "IndianPines/CV_SVM_c50_G01_NoPost/"
 rotation_oversampling = False
-feature_selection = True
+feature_selection = False
 
 cv_reports = []
 
-for i in range(5):
+for i in range(1):
 
     reports = []
 
@@ -45,16 +45,9 @@ for i in range(5):
     X, y = input.read_data(patch_size)
     X = X.reshape(len(X), -1)
 
-    if feature_selection:
-        fs = ExtraTreesClassifier(n_estimators=100)
-        fs = fs.fit(X, y)
-        model = SelectFromModel(fs, prefit=True)
-        X = model.transform(X)
-        print(X.shape)
-    else:
-        fs = None
 
-    skfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=i)
+
+    skfold = StratifiedKFold(n_splits=3, shuffle=True, random_state=i)
 
     file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
     fold_num = 1
@@ -71,13 +64,28 @@ for i in range(5):
 
         print('Start training')
         a = time.time()
-        X_train, X_test = np.take(X, train_index, axis=0), np.take(X, test_index, axis=0)
-        print(time.time() - a)
-        y_train, y_test = np.take(y, train_index, axis=0), np.take(y, test_index, axis=0)
+        # X_train, X_test = np.take(X, train_index, axis=0), np.take(X, test_index, axis=0)
+        # print(time.time() - a)
+        # y_train, y_test = np.take(y, train_index, axis=0), np.take(y, test_index, axis=0)
+
+        X_train, y_train, X_test, y_test = input.read_train_test_data(patch_size)
+        X_train = X_train.reshape(len(X_train), -1)
+        X_test = X_test.reshape(len(X_test),-1)
+
 
         img_train, img_test = input.train_test_images(train_index, test_index)
         save_rgb(fold_log_dir + "train.png", img_train, format='png')
         save_rgb(fold_log_dir + "test.png", img_test, format='png')
+
+        if feature_selection:
+            fs = ExtraTreesClassifier(n_estimators=100)
+            fs = fs.fit(X_train, y_train)
+            model = SelectFromModel(fs, prefit=True)
+            X_train, X_test = model.transform(X_train), model.transform(X_test)
+            print(X_train.shape)
+        else:
+            model = None
+
 
         if rotation_oversampling:
             X_train, y_train = input.rotation_oversampling(X_train, y_train)
@@ -109,7 +117,7 @@ for i in range(5):
         print("Train accuracy:" + str(accuracy_score(y_train, clf.predict(X_train))))
         print("Test accuracy:" + str(acc))
 
-        raw, train_acc, test_acc = IndianPines_CV_DecoderAux.decode(input, patch_size, train_index, test_index, clf, feature_selector=None)
+        raw, train_acc, test_acc = IndianPines_CV_DecoderAux.decode(input, patch_size, train_index, test_index, clf, feature_selector=model)
 
         # filt_img, post_test_acc = IndianPines_CV_Postprocessing.apply_modal_filter(input, raw, train_index, test_index)
         filt_img, post_test_acc = IndianPines_CV_Postprocessing.clean_image(input, raw), test_acc

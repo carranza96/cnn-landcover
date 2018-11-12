@@ -23,6 +23,7 @@ def decode(input, patch_size, train_indices, test_indices, clf, feature_selector
 
         y_pred = clf.predict(patches)
 
+
         predicted_image = np.zeros(shape=(input.height, input.width))
         correct_pixels_train, correct_pixels_test = [], []
 
