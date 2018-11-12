@@ -7,6 +7,7 @@ from spectral import ColorScale
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 import math
 import tensorflow as tf
+from spectral import get_rgb
 
 class Pavia_Input():
 
@@ -101,8 +102,51 @@ class Pavia_Input():
 
 
 
-    # Read patches
     def read_data(self, patch_size, conv3d=False):
+
+        scaler = MinMaxScaler()
+        # Scale: array-like, shape [n_samples, n_features]
+        # Flatten input to (145*145,200)
+        flat_input = self.input_data.reshape(self.num_pixels, self.bands).astype(float)
+        scaled_input = scaler.fit_transform(flat_input)
+        # Return to original shape
+        self.input_data = scaled_input.reshape(self.height, self.width, self.bands)
+
+        dist_border = int((patch_size - 1) / 2)  # Distance from center to border of the patch
+
+        # Pad data to deal with border pixels
+        self.padded_data = np.pad(self.input_data, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)),
+                                  'edge')
+
+        # Collect patches of classified pixels
+        patches, labels = [],[]
+
+
+
+        for i in range(self.height):
+            for j in range(self.width):
+
+                patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
+                label = self.complete_gt[i, j]
+
+                if label!=0:
+                    patches.append(patch)
+                    labels.append(label - 1)
+
+
+
+
+
+        # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
+        # Final processed dataset: X,y
+        X, y = np.asarray(patches, dtype=float), np.asarray(labels, dtype=float)
+        return X, y
+
+
+
+
+    # Read patches
+    def read_train_test_data(self, patch_size, conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -207,4 +251,19 @@ class Pavia_Input():
         return X_train, y_train
 
 
-input = Pavia_Input()
+    def train_test_images(self, train_index, test_index):
+        img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
+        index = 0
+        for i in range(self.height):
+            for j in range(self.width):
+                label = self.complete_gt[i, j]
+                if label != 0:
+                    if index in train_index:
+                        img_train[i, j] = self.complete_gt[i, j]
+                        index += 1
+
+                    elif index in test_index:
+                        img_test[i, j] = self.complete_gt[i, j]
+                        index += 1
+
+        return get_rgb(img_train, color_scale=self.color_scale), get_rgb(img_test, color_scale=self.color_scale)

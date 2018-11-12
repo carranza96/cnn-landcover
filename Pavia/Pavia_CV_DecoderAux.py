@@ -1,7 +1,7 @@
 import numpy as np
 from spectral import get_rgb
 
-def decode(input, patch_size, train_indices, test_indices, clf, feature_selector=None):
+def decode(input, patch_size, train_indices, test_indices, clf):
 
         # X, y = input.read_data(patch_size)
         # X = X.reshape(len(X), -1)
@@ -18,11 +18,8 @@ def decode(input, patch_size, train_indices, test_indices, clf, feature_selector
                 patches.append(patch)
 
         patches = np.asarray(patches).reshape(len(patches), -1)
-        if feature_selector:
-            patches = feature_selector.transform(patches)
-
         y_pred = clf.predict(patches)
-
+        print(y_pred.shape)
         predicted_image = np.zeros(shape=(input.height, input.width))
         correct_pixels_train, correct_pixels_test = [], []
 

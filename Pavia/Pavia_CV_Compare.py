@@ -1,14 +1,14 @@
 from sklearn.model_selection import StratifiedShuffleSplit, StratifiedKFold
 
-from IndianPines import IndianPines_Input
+from Pavia import Pavia_Input
 import time
 import numpy as np
 from collections import Counter
-from IndianPines import IndianPines_CV_DecoderAux
+from Pavia import Pavia_CV_DecoderAux
 # import Test_Split
 from spectral import imshow, save_rgb
 import matplotlib.pyplot as plt
-from IndianPines import IndianPines_CV_Postprocessing
+from Pavia import Pavia_CV_Postprocessing
 import os
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -19,14 +19,13 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
 
 # Input data
-input = IndianPines_Input.IndianPines_Input()
+input = Pavia_Input.Pavia_Input()
 
 # Configurable parameters
 patch_size = 5
 seed = None
-folder = "IndianPines/CV_SVM_c50_G01_NoPost/"
+folder = "Pavia/CV_RandomForest5_NoPost/"
 rotation_oversampling = False
-feature_selection = True
 
 cv_reports = []
 
@@ -44,16 +43,6 @@ for i in range(5):
 
     X, y = input.read_data(patch_size)
     X = X.reshape(len(X), -1)
-
-    if feature_selection:
-        fs = ExtraTreesClassifier(n_estimators=100)
-        fs = fs.fit(X, y)
-        model = SelectFromModel(fs, prefit=True)
-        X = model.transform(X)
-        print(X.shape)
-    else:
-        fs = None
-
     skfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=i)
 
     file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
@@ -96,8 +85,8 @@ for i in range(5):
                 file.write(str(i) + ";" + str(dtrain[i]) + ";" + str(dtest[i]) + "\n")
             file.write("Fold;Train acc; Test acc; Test Post acc;Kappa\n")
 
-        # clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
-        clf = svm.SVC(C=50, gamma=0.1, kernel='rbf')
+        clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
+        # clf = svm.SVC(gamma='scale', decision_function_shape='ovo')
         # clf = KNeighborsClassifier(n_neighbors=5)
 
         clf.fit(X_train, y_train)
@@ -109,12 +98,12 @@ for i in range(5):
         print("Train accuracy:" + str(accuracy_score(y_train, clf.predict(X_train))))
         print("Test accuracy:" + str(acc))
 
-        raw, train_acc, test_acc = IndianPines_CV_DecoderAux.decode(input, patch_size, train_index, test_index, clf, feature_selector=None)
+        raw, train_acc, test_acc = Pavia_CV_DecoderAux.decode(input, patch_size, train_index, test_index, clf)
 
         # filt_img, post_test_acc = IndianPines_CV_Postprocessing.apply_modal_filter(input, raw, train_index, test_index)
-        filt_img, post_test_acc = IndianPines_CV_Postprocessing.clean_image(input, raw), test_acc
+        filt_img, post_test_acc = Pavia_CV_Postprocessing.clean_image(input, raw), test_acc
 
-        conf_matrix = IndianPines_CV_Postprocessing.get_conf_matrix(input, filt_img, train_index, test_index)
+        conf_matrix = Pavia_CV_Postprocessing.get_conf_matrix(input, filt_img, train_index, test_index)
 
         accuracies.append(post_test_acc)
 

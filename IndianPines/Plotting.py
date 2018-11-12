@@ -9,6 +9,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import SelectFromModel
 
 input = IndianPines_Input.IndianPines_Input()
 
@@ -20,8 +24,17 @@ input = IndianPines_Input.IndianPines_Input()
 
 rotation_oversampling = False
 
-X, y = input.read_data(15)
+X, y = input.read_data(5)
 X = X.reshape(len(X), -1)
+
+feature_selection = True
+if feature_selection:
+    fs = ExtraTreesClassifier(n_estimators=100)
+    fs = fs.fit(X, y)
+    model = SelectFromModel(fs, prefit=True)
+    X = model.transform(X)
+    print(X.shape)
+
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
@@ -35,14 +48,18 @@ X_test = X_test.reshape(len(X_test), -1)
 
 
 
-for _ in range(5):
-    clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
+# for _ in range(5):
 
-    clf.fit(X_train, y_train)
 
-    acc_train = accuracy_score(y_train, clf.predict(X_train))
-    acc_test = accuracy_score(y_test,clf.predict(X_test))
+    # clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
 
-    print("Train %0.3f" %acc_train)
-    print("Test %0.3f" %acc_test)
+clf = svm.SVC(C=50, gamma=0.1, kernel='rbf')
+# clf = KNeighborsClassifier(n_neighbors=1)
+clf.fit(X_train, y_train)
+
+acc_train = accuracy_score(y_train, clf.predict(X_train))
+acc_test = accuracy_score(y_test, clf.predict(X_test))
+
+print("Train %0.3f" %acc_train)
+print("Test %0.3f" %acc_test)
 
