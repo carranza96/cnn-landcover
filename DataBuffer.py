@@ -34,7 +34,6 @@ class DataBuffer():
         # Shuffle data at the beginning of epoch
         if shuffle_data and self.index_in_epoch == 0:
             np.random.RandomState(self.seed).shuffle(self.indices)
-            print(self.indices)
             #self.images,self.labels = get_data_shuffled(self.images,self.labels)
 
 

@@ -18,35 +18,25 @@ def mode_filter(img):
 
 
 
-def accuracy(input, img,train_index,test_index):
+def accuracy(input, img, train_positions, test_positions):
 
     correct_pixels_train, correct_pixels_test = [], []
-    index = 0
-    for i in range(input.height):
-        for j in range(input.width):
 
-            y_ = img[i, j]
+    for (i, j) in train_positions:
+        y_ = img[i, j]
+        label = input.complete_gt[i, j]
+        if label == y_:
+            correct_pixels_train.append(1)
+        else:
+            correct_pixels_train.append(0)
 
-            label = input.complete_gt[i, j]
-            if label != 0:
-                is_train = index in train_index
-                is_test = index in test_index
-
-                if is_train or is_test:
-                    index += 1
-
-
-                if label == y_:
-                    if is_train:
-                        correct_pixels_train.append(1)
-                    elif is_test:
-                        correct_pixels_test.append(1)
-                else:
-                    if is_train:
-                        correct_pixels_train.append(0)
-                    elif is_test:
-                        correct_pixels_test.append(0)
-
+    for (i, j) in test_positions:
+        y_ = img[i, j]
+        label = input.complete_gt[i, j]
+        if label == y_:
+            correct_pixels_test.append(1)
+        else:
+            correct_pixels_test.append(0)
 
     train_acc = np.asarray(correct_pixels_train).mean() * 100
     test_acc = np.asarray(correct_pixels_test).mean() * 100
@@ -72,47 +62,42 @@ def clean_image(input, img):
     return clean
 
 
-def get_conf_matrix(input, img, train_index, test_index):
+def get_conf_matrix(input, img, test_positions):
 
     test_labels, test_predictions = [], []
-    index = 0
-    for i in range(input.height):
-        for j in range(input.width):
 
-            y_ = img[i, j]
+    for (i, j) in test_positions:
+        y_ = img[i, j]
+        label = input.complete_gt[i, j]
 
-            label = input.complete_gt[i, j]
-            if label != 0:
-                is_train = index in train_index
-                is_test = index in test_index
-
-                if is_train or is_test:
-                    index += 1
-
-
-                if is_test:
-                    test_labels.append(label)
-                    test_predictions.append(y_)
+        test_labels.append(label)
+        test_predictions.append(y_)
 
     conf_matrix = ConfusionMatrix(test_labels, test_predictions)
 
     return conf_matrix
 
 
-def apply_modal_filter(input, img, train_index, test_index):
+def apply_modal_filter(input, img, train_positions, test_positions):
 
     filt_img = img
+
+    print("----------\nBefore filter")
+    train_acc, test_acc = accuracy(input, filt_img, train_positions, test_positions)
+    print("Training accuracy: %.2f" % train_acc)
+    print("Test accuracy: %.2f" % test_acc)
 
     for n in range(5):
         print("---------------")
         print("Iteration " + str(n))
         filt_img = mode_filter(filt_img)
 
-        train_acc, test_acc = accuracy(input, filt_img, train_index, test_index)
+        train_acc, test_acc = accuracy(input, filt_img, train_positions, test_positions)
         print("Training accuracy: %.2f" %train_acc)
         print("Test accuracy: %.2f" %test_acc)
 
-    clean_img = clean_image(input, filt_img)
+    # clean_img = clean_image(input, filt_img)
+    clean_img = filt_img
     return clean_img, test_acc
 
 #

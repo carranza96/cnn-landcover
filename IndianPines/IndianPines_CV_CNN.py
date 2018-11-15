@@ -5,43 +5,44 @@ import time
 import numpy as np
 from collections import Counter
 from IndianPines import IndianPines_CV_DecoderAux
-# import Test_Split
 from spectral import imshow, save_rgb
-import matplotlib.pyplot as plt
-from IndianPines import IndianPines_CV_Postprocessing
+from IndianPines import IndianPines_CV_Postprocessing,IndianPines_CV_Decoder
 import os
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn import svm
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.feature_selection import SelectFromModel
-from imblearn.under_sampling import CondensedNearestNeighbour,EditedNearestNeighbours
+import CNNTrain_2D
+
 
 # Input data
 input = IndianPines_Input.IndianPines_Input()
 
-# Configurable parameters
 patch_size = 5
-seed = None
-rotation_oversampling = False
-feature_selection = False
-apply_filter = False
-classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[1]
-folder = "IndianPines/CV_" + classifier + "/"
 
-if "NN" in classifier:
-    feature_selection = True
+config = {}
+config['patch_size'] = patch_size
+config['kernel_size'] = 3
+config['in_channels'] = input.bands
+config['num_classes'] = input.num_classes
+config['conv1_channels'] = 32
+config['conv2_channels'] = 64
+config['fc1_units'] = 1024
+config['batch_size'] = 16
+config['max_epochs'] = 50
+config['train_dropout'] = 0.5
+config['initial_learning_rate'] = 0.01
+config['decaying_lr'] = True
+config['seed'] = None
+folder = "IndianPines/CV_CNN/"
+rotation_oversampling = True
+apply_filter = False
+
+
 
 # 5 partitions to the dataset
 X, y, positions = input.read_data(patch_size)
-X = X.reshape(len(X), -1)
 dataset_reduction = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
-overall_reports = []
 partition = 1
+overall_reports = []
 
 for discarded_indices, selected_indices in dataset_reduction.split(X, y):
 
@@ -81,29 +82,24 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             directory = os.path.dirname(fold_dir)
             if not os.path.exists(directory):
                 os.makedirs(directory)
+            config['log_dir'] = fold_dir
 
-
-
+            print('Start training')
+            a = time.time()
             X_train, X_test = np.take(X_reduced, train_index, axis=0), np.take(X_reduced, test_index, axis=0)
+            print(time.time() - a)
             y_train, y_test = np.take(y_reduced, train_index, axis=0), np.take(y_reduced, test_index, axis=0)
 
             train_positions = np.take(selected_positions, train_index, axis=0)
             test_positions = np.take(selected_positions, test_index, axis=0)
-
 
             img_train, img_test = input.train_test_images(train_positions, test_positions)
             save_rgb(fold_dir + "train.png", img_train, format='png')
             save_rgb(fold_dir + "test.png", img_test, format='png')
 
 
-            if feature_selection:
-                fs = ExtraTreesClassifier(n_estimators=100)
-                fs = fs.fit(X_train, y_train)
-                model = SelectFromModel(fs, prefit=True)
-                X_train, X_test = model.transform(X_train), model.transform(X_test)
-                print(X_train.shape)
-            else:
-                model = None
+            if rotation_oversampling:
+                X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
             print("Size training set", len(X_train))
             print("Size test set", len(X_test))
@@ -122,34 +118,21 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             print('Start training')
             t = time.time()
 
-            if classifier =="RF":
-                clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
-            elif classifier == "SVM":
-                clf = svm.SVC(C=50, gamma=0.25, kernel='rbf')
-            elif classifier == "1NN":
-                clf = KNeighborsClassifier(n_neighbors=1, n_jobs=-1)
-            elif classifier == "3NN":
-                clf = KNeighborsClassifier(n_neighbors=3, n_jobs=-1)
-            elif classifier == "5NN":
-                clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1)
-
-
-            clf.fit(X_train, y_train)
+            save_path, test_acc, _ = CNNTrain_2D.train_model(X_train, y_train, X_test, y_test, config)
 
             t = time.time() - t
             print(t)
             if fold_num == 1:
-                file.write("Time %0.3f\n" %t)
+                file.write("Time %0.3f\n" % t)
 
-            y_pred = clf.predict(X_test)
+            print("Test accuracy:" + str(test_acc))
 
-            train_acc = accuracy_score(y_train, clf.predict(X_train))*100
-            test_acc = accuracy_score(y_test, y_pred)*100
+            raw, train_acc, test_acc = IndianPines_CV_Decoder.decode(input, config, train_positions, test_positions, save_path)
 
             print("Train accuracy:" + str(train_acc))
             print("Test accuracy:" + str(test_acc))
 
-            raw = IndianPines_CV_DecoderAux.decode(input, patch_size, clf, feature_selector=model)
+
             save_rgb(fold_dir + "outmap.png", raw, color_scale=input.color_scale, format='png')
 
 
@@ -157,6 +140,7 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
                 filt_img, post_test_acc = IndianPines_CV_Postprocessing.apply_modal_filter(input, raw, train_positions, test_positions)
             else:
                 filt_img, post_test_acc = IndianPines_CV_Postprocessing.clean_image(input, raw), test_acc
+
 
             conf_matrix = IndianPines_CV_Postprocessing.get_conf_matrix(input, filt_img, test_positions)
 

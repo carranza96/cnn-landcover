@@ -77,3 +77,7 @@ def decode(input, config, model_ckp):
 def output_image(input, output):
     return get_rgb(output, color_scale=input.color_scale)
 
+
+
+
+

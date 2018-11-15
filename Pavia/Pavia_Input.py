@@ -119,7 +119,7 @@ class Pavia_Input():
                                   'edge')
 
         # Collect patches of classified pixels
-        patches, labels = [],[]
+        patches, labels,positions = [],[],[]
 
 
 
@@ -128,10 +128,13 @@ class Pavia_Input():
 
                 patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
                 label = self.complete_gt[i, j]
+                pos = (i, j)
+
 
                 if label!=0:
                     patches.append(patch)
                     labels.append(label - 1)
+                    positions.append(pos)
 
 
 
@@ -140,7 +143,8 @@ class Pavia_Input():
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
         X, y = np.asarray(patches, dtype=float), np.asarray(labels, dtype=float)
-        return X, y
+        positions = np.asarray(positions, dtype=[('i',int),('j',int)])
+        return X, y, positions
 
 
 
@@ -251,19 +255,16 @@ class Pavia_Input():
         return X_train, y_train
 
 
-    def train_test_images(self, train_index, test_index):
-        img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
-        index = 0
-        for i in range(self.height):
-            for j in range(self.width):
-                label = self.complete_gt[i, j]
-                if label != 0:
-                    if index in train_index:
-                        img_train[i, j] = self.complete_gt[i, j]
-                        index += 1
 
-                    elif index in test_index:
-                        img_test[i, j] = self.complete_gt[i, j]
-                        index += 1
+    def train_test_images(self, train_positions, test_positions):
+        img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
+
+        for (i, j) in train_positions:
+            label = self.complete_gt[i, j]
+            img_train[i, j] = label
+
+        for (i, j) in test_positions:
+            label = self.complete_gt[i, j]
+            img_test[i, j] = label
 
         return get_rgb(img_train, color_scale=self.color_scale), get_rgb(img_test, color_scale=self.color_scale)
