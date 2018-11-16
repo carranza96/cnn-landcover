@@ -8,7 +8,7 @@ from spectral import ColorScale
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 import math
 import tensorflow as tf
-
+from spectral import get_rgb
 
 
 
@@ -41,7 +41,7 @@ class Flevoland_Input():
         self.train_data = trainingset_gt.load().squeeze()
         self.padded_data = self.input_data
 
-
+        self.complete_gt = self.train_data
 
         # Obtain test data by comparing training set to complete ground truth
         # self.test_data = self.get_test_data()
@@ -97,22 +97,26 @@ class Flevoland_Input():
         self.padded_data = np.pad(self.input_data, ((dist_border, dist_border), (dist_border, dist_border), (0, 0)), 'edge')
 
         # Collect patches of classified pixels
-        train_patches, train_labels = [], []
+        train_patches, train_labels,positions = [], [], []
 
         for i in range(self.height):
             for j in range(self.width):
                 patch = self.Patch(patch_size, i + dist_border, j + dist_border, pad=True)
                 label = self.train_data[i, j]
+                pos = (i, j)
 
                 if label != 0:  # Ignore patches with unknown landcover type for the central pixel
                     train_patches.append(patch)
                     train_labels.append(label - 1)
+                    positions.append(pos)
+
 
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
         X_train = np.asarray(train_patches, dtype=float)
         y_train = np.asarray(train_labels, dtype=int)
+        positions = np.asarray(positions, dtype=[('i',int),('j',int)])
 
 
         # For 3D shape must be 5D Tensor
@@ -122,7 +126,7 @@ class Flevoland_Input():
             # [num_examples, in_depth, in_height, in_width] Need one more dimension
             X_train= np.expand_dims(X_train, axis=4)
 
-        return X_train, y_train
+        return X_train, y_train, positions
 
 
 
@@ -156,8 +160,8 @@ class Flevoland_Input():
 
                 X = X_split[i]  # Your image or batch of images
                 y = y_split[i]
-                for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
-                # for degree_angle in [90, 180, 270]:
+                # for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                for degree_angle in [90, 180, 270]:
                     radian = degree_angle * math.pi / 180
                     tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)
@@ -170,3 +174,20 @@ class Flevoland_Input():
         del X_split, y_split
 
         return X_train, y_train
+
+
+
+
+    def train_test_images(self, train_positions, test_positions):
+        img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
+
+        for (i,j) in train_positions:
+            label = self.complete_gt[i, j]
+            img_train[i,j] = label
+
+        for (i, j) in test_positions:
+            label = self.complete_gt[i, j]
+            img_test[i, j] = label
+
+
+        return get_rgb(img_train, color_scale=self.color_scale), get_rgb(img_test, color_scale=self.color_scale)
