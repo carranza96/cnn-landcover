@@ -158,7 +158,8 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
 
             y_pred = clf.predict(X_test)
 
-            train_acc = accuracy_score(y_train, clf.predict(X_train))*100
+            # train_acc = accuracy_score(y_train, clf.predict(X_train))*100
+            train_acc = 0
             test_acc = accuracy_score(y_test, y_pred)*100
 
             print("Train accuracy:" + str(train_acc))
