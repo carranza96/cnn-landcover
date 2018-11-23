@@ -41,14 +41,14 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 20
+config['max_epochs'] = 30
 config['train_dropout'] = 0.5
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
 folder = selected_img + "/CV_CNN/"
 rotation_oversampling = True
-apply_filter = True
+apply_filter = False
 
 
 

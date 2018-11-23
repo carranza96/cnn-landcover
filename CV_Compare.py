@@ -17,6 +17,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
 import CV_Postprocessing, CV_Decoder
+from pandas_ml import ConfusionMatrix
+
 
 # Input data
 images = ["IndianPines", "Pavia", "Flevoland", "SanFrancisco", "Salinas"]
@@ -28,7 +30,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[0]
+selected_img = images[4]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -36,13 +38,13 @@ print("Image:" + selected_img)
 
 
 # Configurable parameters
-patch_size = 1
+patch_size = 5
 seed = None
 rotation_oversampling = False
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[0]
+classifier = classifiers[1]
 folder = selected_img + "/CV_" + classifier + "/"
 
 if "NN" in classifier:
@@ -138,7 +140,7 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             if classifier =="RF":
                 clf = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=None, n_jobs=-1)
             elif classifier == "SVM":
-                clf = svm.SVC(C=50, gamma=0.25, kernel='rbf')
+                clf = svm.SVC(C=50, gamma=0.01, kernel='rbf')
             elif classifier == "1NN":
                 clf = KNeighborsClassifier(n_neighbors=1, n_jobs=-1)
             elif classifier == "3NN":
@@ -162,18 +164,21 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             print("Train accuracy:" + str(train_acc))
             print("Test accuracy:" + str(test_acc))
 
-            raw = CV_Decoder.decode_sklearn(input, patch_size, clf, feature_selector=model)
-            save_rgb(fold_dir + "outmap.png", raw, color_scale=input.color_scale, format='png')
 
+            conf_matrix = ConfusionMatrix(y_test,y_pred)
 
-            if apply_filter:
-                filt_img, post_test_acc = CV_Postprocessing.apply_modal_filter(input, raw, train_positions, test_positions)
-            else:
-                filt_img, post_test_acc = CV_Postprocessing.clean_image(input, raw), test_acc
+            # raw = CV_Decoder.decode_sklearn(input, patch_size, clf, feature_selector=model)
+            # save_rgb(fold_dir + "outmap.png", raw, color_scale=input.color_scale, format='png')
+            #
+            #
+            # if apply_filter:
+            #     filt_img, post_test_acc = CV_Postprocessing.apply_modal_filter(input, raw, train_positions, test_positions)
+            # else:
+            #     filt_img, post_test_acc = CV_Postprocessing.clean_image(input, raw), test_acc
+            #
+            # conf_matrix = CV_Postprocessing.get_conf_matrix(input, filt_img, test_positions)
 
-            conf_matrix = CV_Postprocessing.get_conf_matrix(input, filt_img, test_positions)
-
-
+            post_test_acc = test_acc
             fold_oa = conf_matrix.stats_overall['Accuracy']
             fold_kappa = conf_matrix.stats_overall['Kappa']
 
@@ -184,7 +189,7 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
 
             conf_matrix.classification_report.to_csv(fold_dir + "classification_report" + str(fold_num))
 
-            save_rgb(fold_dir + "outmap_postprocessing.png", filt_img, color_scale=input.color_scale, format='png')
+            # save_rgb(fold_dir + "outmap_postprocessing.png", filt_img, color_scale=input.color_scale, format='png')
 
             # Clear memory
             del X_train, X_test, y_train, y_test
