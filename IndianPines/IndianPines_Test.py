@@ -28,9 +28,9 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
+config['patch_size'] = 5
 config['kernel_size'] = 3
 config['conv1_channels'] = 32
 config['conv2_channels'] = 64

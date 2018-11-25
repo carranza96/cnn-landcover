@@ -1,4 +1,4 @@
-from Pavia import Pavia_Input
+from IndianPines import IndianPines_Input
 import Decoder
 import time
 from collections import Counter
@@ -22,7 +22,7 @@ from sklearn.neighbors import KNeighborsClassifier
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = Pavia_Input.Pavia_Input()
+input = IndianPines_Input.IndianPines_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
 print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
@@ -34,9 +34,9 @@ patch_size = 5
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[0]
+classifier = classifiers[3]
 seed = None
-folder = 'Pavia/'
+folder = 'IndianPines/'
 rotation_oversampling = False
 
 if "NN" in classifier:
@@ -48,7 +48,7 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(patch_size))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(patch_size) + "\n")
-log_dir = folder + "resultados/ps" + str(patch_size) + "/"
+log_dir = folder + "resultados/" + classifier
 
 
 a = time.time()
@@ -155,7 +155,7 @@ envi.save_image(log_dir + "ps" + str(patch_size) + ".hdr",
 #
 output = Decoder.output_image(input, raw)
 view = imshow(output)
-plt.savefig(log_dir + 'img/' + str(patch_size) +'.png')
+plt.savefig(log_dir + str(patch_size) +'.png')
 #
 #
 # # Image with legend
