@@ -160,8 +160,8 @@ class Flevoland_Input():
 
                 X = X_split[i]  # Your image or batch of images
                 y = y_split[i]
-                # for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
-                for degree_angle in [90, 180, 270]:
+                for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                # for degree_angle in [90, 180, 270]:
                     radian = degree_angle * math.pi / 180
                     tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)

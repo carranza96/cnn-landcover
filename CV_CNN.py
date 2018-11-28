@@ -34,7 +34,7 @@ patch_size = 5
 
 config = {}
 config['patch_size'] = patch_size
-config['kernel_size'] = 3
+config['kernel_size'] = 5
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['conv1_channels'] = 32
@@ -42,11 +42,11 @@ config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
 config['max_epochs'] = 30
-config['train_dropout'] = 0.5
+config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-folder = selected_img + "/CV_CNN/"
+folder = selected_img + "/CV_CNN54ROT/"
 rotation_oversampling = True
 apply_filter = False
 

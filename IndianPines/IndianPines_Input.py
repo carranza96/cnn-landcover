@@ -191,8 +191,8 @@ class IndianPines_Input():
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
-        y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
+        X_train, X_test = np.asarray(train_patches, dtype=np.float32), np.asarray(test_patches, dtype=np.float32)
+        y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=int)
 
 
 

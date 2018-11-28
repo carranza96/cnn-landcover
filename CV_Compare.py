@@ -30,7 +30,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[4]
+selected_img = images[3]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -40,7 +40,7 @@ print("Image:" + selected_img)
 # Configurable parameters
 patch_size = 5
 seed = None
-rotation_oversampling = False
+rotation_oversampling = True
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
@@ -52,7 +52,7 @@ if "NN" in classifier:
 
 # 5 partitions to the dataset
 X, y, positions = input.read_data(patch_size)
-X = X.reshape(len(X), -1)
+# X = X.reshape(len(X), -1)
 dataset_reduction = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
 overall_reports = []
@@ -110,6 +110,11 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             save_rgb(fold_dir + "train.png", img_train, format='png')
             save_rgb(fold_dir + "test.png", img_test, format='png')
 
+
+            if rotation_oversampling:
+                X_train, y_train = input.rotation_oversampling(X_train, y_train)
+                X_train = X_train.reshape(len(X_train), -1)
+                X_test = X_test.reshape(len(X_test),-1)
 
             if feature_selection:
                 fs = ExtraTreesClassifier(n_estimators=100)

@@ -142,7 +142,7 @@ class Pavia_Input():
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X, y = np.asarray(patches, dtype=float), np.asarray(labels, dtype=float)
+        X, y = np.asarray(patches, dtype=np.float32), np.asarray(labels, dtype=np.float32)
         positions = np.asarray(positions, dtype=[('i',int),('j',int)])
         return X, y, positions
 
@@ -194,8 +194,8 @@ class Pavia_Input():
 
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
-        X_train, X_test = np.asarray(train_patches, dtype=float), np.asarray(test_patches, dtype=float)
-        y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=float)
+        X_train, X_test = np.asarray(train_patches, dtype=np.float32), np.asarray(test_patches, dtype=np.float32)
+        y_train, y_test = np.asarray(train_labels, dtype=int), np.asarray(test_labels, dtype=int)
 
 
         # For 3D shape must be 5D Tensor
@@ -239,8 +239,8 @@ class Pavia_Input():
 
                 X = X_split[i]  # Your image or batch of images
                 y = y_split[i]
-                for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
-                # for degree_angle in [45, 90, 180, 270]:
+                # for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                for degree_angle in [45, 90, 180, 270]:
                     radian = degree_angle * math.pi / 180
                     tf_img = tf.contrib.image.rotate(X, radian)
                     rotated_img = sess.run(tf_img)

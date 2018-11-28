@@ -30,11 +30,11 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-patch_size = 5
+patch_size = 1
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[0]
+classifier = classifiers[1]
 seed = None
 folder = 'Pavia/'
 rotation_oversampling = False
@@ -48,7 +48,7 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(patch_size))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(patch_size) + "\n")
-log_dir = folder + "resultados/ps" + str(patch_size) + "/"
+log_dir = folder + "resultados/" + classifier
 
 
 a = time.time()
@@ -145,7 +145,7 @@ raw = Decoder.decode_sklearn(input, patch_size, clf , model)
 #                                          + str(config['patch_size']))
 #
 #
-# raw = np.pad(raw, ((0, 0), (0, 270)), 'constant', constant_values=0)
+raw = np.pad(raw, ((0, 0), (0, 270)), 'constant', constant_values=0)
 #
 #
 # # Output image
@@ -155,7 +155,7 @@ envi.save_image(log_dir + "ps" + str(patch_size) + ".hdr",
 #
 output = Decoder.output_image(input, raw)
 view = imshow(output)
-plt.savefig(log_dir + 'img/' + str(patch_size) +'.png')
+plt.savefig(log_dir + str(patch_size) +'.png')
 #
 #
 # # Image with legend

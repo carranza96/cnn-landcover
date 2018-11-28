@@ -1,4 +1,4 @@
-from IndianPines import IndianPines_Input
+from SanFrancisco import SanFrancisco_Input
 import Decoder
 import time
 from collections import Counter
@@ -22,9 +22,9 @@ from sklearn.neighbors import KNeighborsClassifier
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = IndianPines_Input.IndianPines_Input()
+input = SanFrancisco_Input.SanFrancisco_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
-print("Test pixels", np.count_nonzero(input.test_data))
+# print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
 
 
@@ -34,10 +34,10 @@ patch_size = 5
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[1]
+classifier = classifiers[4]
 seed = None
-folder = 'IndianPines/'
-rotation_oversampling = True
+folder = 'Flevoland/'
+rotation_oversampling = False
 
 if "NN" in classifier:
     feature_selection = True
@@ -48,14 +48,14 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(patch_size))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(patch_size) + "\n")
-log_dir = folder + "resultados/" + classifier +"Rot"
+log_dir = folder + "resultados/" + classifier
 
 
 a = time.time()
 
 
-X_train, y_train, X_test, y_test = input.read_train_test_data(patch_size)
-#X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
+X_train, y_train,_ = input.read_data(patch_size)
+X_train = X_train.reshape(len(X_train), -1)
 
 
 
@@ -65,8 +65,6 @@ X_train, y_train, X_test, y_test = input.read_train_test_data(patch_size)
 if rotation_oversampling:
     X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
-X_train = X_train.reshape(len(X_train), -1)
-X_test = X_test.reshape(len(X_test), -1)
 
 
 print('Start training')
@@ -77,17 +75,14 @@ print(time.time() - a)
 file.write("\n--------------------------------\n")
 file.write("Size training set: %d\n" %len(X_train))
 print("Size training set", len(X_train))
-file.write("Size test set: %d\n" %len(X_test))
-print("Size test set", len(X_test))
 
 
 file.write("\n------------------\nResults for patch size " + str(patch_size) + ":\n")
 file.write("Class distribution:\n")
 file.write("#;Train;Test\n")
 dtrain = Counter(y_train)
-dtest = Counter(y_test)
 for i in range(input.num_classes):
-    file.write(str(i + 1) + ";" + str(dtrain[i]) + ";" + str(dtest[i]) + "\n")
+    file.write(str(i + 1) + ";" + str(dtrain[i]) + ";" + "\n")
 
 
 
@@ -96,7 +91,7 @@ if feature_selection:
     fs = ExtraTreesClassifier(n_estimators=100)
     fs = fs.fit(X_train, y_train)
     model = SelectFromModel(fs, prefit=True)
-    X_train, X_test = model.transform(X_train), model.transform(X_test)
+    X_train = model.transform(X_train)
     print(X_train.shape)
 else:
     model = None
@@ -114,20 +109,16 @@ elif classifier == "5NN":
 
 clf.fit(X_train, y_train)
 
-y_pred = clf.predict(X_test)
 
 train_acc = accuracy_score(y_train, clf.predict(X_train))*100
-test_acc = accuracy_score(y_test, y_pred) * 100
 
 print("Train accuracy:" + str(train_acc))
-print("Test accuracy:" + str(test_acc))
 
-conf_matrix = ConfusionMatrix(y_test, y_pred)
 
 
 
 # Clear memory
-del X_train, X_test, y_train, y_test
+del X_train, y_train
 
 
 #
@@ -145,7 +136,6 @@ raw = Decoder.decode_sklearn(input, patch_size, clf , model)
 #                                          + str(config['patch_size']))
 #
 #
-# raw = np.pad(raw, ((0, 0), (0, 270)), 'constant', constant_values=0)
 #
 #
 # # Output image
