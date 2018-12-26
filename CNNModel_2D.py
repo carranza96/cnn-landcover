@@ -65,7 +65,7 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
 
     with tf.name_scope('bn2'):
         h_bn2 = batch_norm(h_conv1, phase_train)
-    #
+
 
     # Pooling layer #1
     # Downsamples by 2X.
@@ -180,10 +180,13 @@ def loss(logits, labels):
 
   # Calculate the average cross entropy loss across the batch.
   # labels = tf.one_hot(indices=tf.cast(labels, tf.int64), depth=number_of_classes)
-  cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-  labels=labels, logits=logits, name='cross_entropy')
+  cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits, name='cross_entropy')
   # if math.isnan(cross_entropy):
-  #     cross_entropy= math.log(0.000000000001)
+  #     print("NAN!!!")
+      # cross_entropy= math.log(0.000000000001)
+  # labels_onehot = tf.one_hot(labels, depth=9)
+  # cross_entropy = -tf.reduce_sum(labels_onehot * tf.log(tf.nn.softmax(logits) + 0.1))
+
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
   return cross_entropy_mean
@@ -209,6 +212,7 @@ def training(loss, learning_rate, global_step):
         with tf.control_dependencies(update_ops):
             # Create the gradient descent optimizer with the given learning rate.
             optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+            # optimizer = tf.train.AdamOptimizer(learning_rate)
 
             # Use the optimizer to apply the gradients that minimize the loss
             # (and also increment the global step counter) as a single training step.

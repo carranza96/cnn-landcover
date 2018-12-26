@@ -30,14 +30,14 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-patch_size = 1
+patch_size = 5
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[1]
+classifier = classifiers[0]
 seed = None
 folder = 'Pavia/'
-rotation_oversampling = False
+rotation_oversampling = True
 
 if "NN" in classifier:
     feature_selection = True
@@ -48,7 +48,7 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(patch_size))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(patch_size) + "\n")
-log_dir = folder + "resultados/" + classifier
+log_dir = folder + "resultados/" + classifier + "_Rot"
 
 
 a = time.time()
@@ -56,17 +56,14 @@ a = time.time()
 
 X_train, y_train, X_test, y_test = input.read_train_test_data(patch_size)
 #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
-X_train = X_train.reshape(len(X_train), -1)
-X_test = X_test.reshape(len(X_test), -1)
-
-
-
 
 
 
 if rotation_oversampling:
     X_train, y_train = input.rotation_oversampling(X_train, y_train)
 
+X_train = X_train.reshape(len(X_train), -1)
+X_test = X_test.reshape(len(X_test), -1)
 
 
 print('Start training')

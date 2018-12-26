@@ -36,7 +36,7 @@ apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
 classifier = classifiers[4]
 seed = None
-folder = 'Flevoland/'
+folder = 'SanFrancisco/'
 rotation_oversampling = False
 
 if "NN" in classifier:
@@ -54,7 +54,7 @@ log_dir = folder + "resultados/" + classifier
 a = time.time()
 
 
-X_train, y_train,_ = input.read_data(patch_size)
+X_train, y_train, _ = input.read_data(patch_size)
 X_train = X_train.reshape(len(X_train), -1)
 
 

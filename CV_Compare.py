@@ -30,7 +30,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[3]
+selected_img = images[0]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -40,11 +40,11 @@ print("Image:" + selected_img)
 # Configurable parameters
 patch_size = 5
 seed = None
-rotation_oversampling = True
+rotation_oversampling = False
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[1]
+classifier = classifiers[0]
 folder = selected_img + "/CV_" + classifier + "/"
 
 if "NN" in classifier:
@@ -53,7 +53,7 @@ if "NN" in classifier:
 # 5 partitions to the dataset
 X, y, positions = input.read_data(patch_size)
 # X = X.reshape(len(X), -1)
-dataset_reduction = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
+dataset_reduction = StratifiedKFold(n_splits=20, shuffle=True, random_state=0)
 
 overall_reports = []
 partition = 1
@@ -73,7 +73,7 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
     partition_reports = []
 
     # Repeat CV process 5 times
-    for cv_index in range(5):
+    for cv_index in range(1):
 
         cv_dir = partition_dir + "cv" + str(cv_index) + "/"
         directory = os.path.dirname(cv_dir)
@@ -113,8 +113,9 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
 
             if rotation_oversampling:
                 X_train, y_train = input.rotation_oversampling(X_train, y_train)
-                X_train = X_train.reshape(len(X_train), -1)
-                X_test = X_test.reshape(len(X_test),-1)
+
+            X_train = X_train.reshape(len(X_train), -1)
+            X_test = X_test.reshape(len(X_test),-1)
 
             if feature_selection:
                 fs = ExtraTreesClassifier(n_estimators=100)

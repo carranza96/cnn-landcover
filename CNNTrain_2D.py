@@ -133,7 +133,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
         test_batch_size = 1000
         test_data_buffer = DataBuffer(images=X_test, labels=y_test, batch_size=test_batch_size)
         test_batch_num = int(math.ceil(len(y_test) / test_batch_size))
-        test_eval_freq = 10
+        test_eval_freq = 1
 
 
 
@@ -197,7 +197,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
 
                     print('Time: ', str(time.strftime("%Hh%Mm%Ss", time.gmtime((time.time() - start_time)))))
                     print('Epoch %d. Batch index %d, training accuracy %g' % (epoch, batch_index, train_accuracy*100))
-                    # print('Epoch %d. Batch index %d, Loss %g' % (epoch, batch_index, train_loss))
+                    print('Epoch %d. Batch index %d, Loss %g' % (epoch, batch_index, train_loss))
 
 
                 # Train model

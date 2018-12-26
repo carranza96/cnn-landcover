@@ -50,12 +50,12 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(config['patch_size']))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(config['patch_size']) + "\n")
-log_dir = folder + "resultados/ps" + str(config['patch_size']) + "/"
+log_dir = folder + "CNN_Sinbatchnorm/ps" + str(config['patch_size']) + "/"
 config['log_dir'] = log_dir
 
 a = time.time()
 
-X_train, y_train, X_test, y_test = input.read_data(config['patch_size'])
+X_train, y_train, X_test, y_test = input.read_train_test_data(config['patch_size'])
 #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 
