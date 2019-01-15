@@ -147,7 +147,7 @@ class IndianPines_Input():
 
 
     # Read patches
-    def read_train_test_data(self, patch_size, conv3d=False):
+    def read_train_test_data(self, patch_size, rot_oversampling=False,conv3d=False):
         """
         Function for reading and processing the Indian Pines Dataset
         :return: Processed dataset after collecting classified patches
@@ -202,7 +202,7 @@ class IndianPines_Input():
         # [num_examples, in_depth, in_height, in_width, in_channels(1)]
         if conv3d:
             if rot_oversampling:
-                X_train,y_train = self.rotation_oversampling(X_train,y_train)
+                X_train, y_train = self.rotation_oversampling(X_train, y_train)
             X_train, X_test = np.transpose(X_train, axes=(0, 3, 1, 2)), np.transpose(X_test, axes=(0, 3, 1, 2))
             # [num_examples, in_depth, in_height, in_width] Need one more dimension
             X_train, X_test = np.expand_dims(X_train, axis=4), np.expand_dims(X_test, axis=4)

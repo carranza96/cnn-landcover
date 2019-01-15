@@ -40,11 +40,11 @@ print("Image:" + selected_img)
 # Configurable parameters
 patch_size = 5
 seed = None
-rotation_oversampling = False
+rotation_oversampling = True
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[0]
+classifier = classifiers[1]
 folder = selected_img + "/CV_" + classifier + "/"
 
 if "NN" in classifier:
@@ -53,7 +53,7 @@ if "NN" in classifier:
 # 5 partitions to the dataset
 X, y, positions = input.read_data(patch_size)
 # X = X.reshape(len(X), -1)
-dataset_reduction = StratifiedKFold(n_splits=20, shuffle=True, random_state=0)
+dataset_reduction = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
 overall_reports = []
 partition = 1
