@@ -144,6 +144,11 @@ class Pavia_Input():
         # Final processed dataset: X,y
         X, y = np.asarray(patches, dtype=np.float32), np.asarray(labels, dtype=np.float32)
         positions = np.asarray(positions, dtype=[('i',int),('j',int)])
+
+        if conv3d:
+            X = np.transpose(X, axes=(0, 3, 1, 2))
+            # [num_examples, in_depth, in_height, in_width] Need one more dimension
+            X = np.expand_dims(X, axis=4)
         return X, y, positions
 
 

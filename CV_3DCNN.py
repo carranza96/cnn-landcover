@@ -25,7 +25,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[2]
+selected_img = images[1]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -43,7 +43,7 @@ for patch_size in [5]:
     config['conv2_channels'] = 64
     config['fc1_units'] = 1024
     config['batch_size'] = 16
-    config['max_epochs'] = 10
+    config['max_epochs'] = 30
     config['train_dropout'] = 0.8
     config['initial_learning_rate'] = 0.01
     config['decaying_lr'] = True

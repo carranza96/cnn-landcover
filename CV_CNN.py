@@ -25,7 +25,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[4]
+selected_img = images[3]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
