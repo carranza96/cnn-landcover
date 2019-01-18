@@ -102,7 +102,8 @@ def train_model(X_train, y_train, X_test, y_test, config):
         #         v_ = sess.run(v)
         #         print(v_)
 
-
+        numvars = np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()])
+        print("Número de variables:", numvars)
         # Create DataBuffer for managing batches of train set
         data_buffer = DataBuffer(images=X_train, labels=y_train, batch_size=batch_size, seed=seed)
 
@@ -134,7 +135,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
         test_batch_size = 1000
         test_data_buffer = DataBuffer(images=X_test, labels=y_test, batch_size=test_batch_size)
         test_batch_num = int(math.ceil(len(y_test) / test_batch_size))
-        test_eval_freq = 10
+        test_eval_freq = 1
 
 
 

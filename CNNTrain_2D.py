@@ -175,6 +175,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
         step = 0
 
         for epoch in range(max_epochs):
+            t = time.time()
 
             for batch_index in range(num_batches_per_epoch):
 
@@ -189,25 +190,29 @@ def train_model(X_train, y_train, X_test, y_test, config):
                                         keep_prob: 1, phase_train: False}
 
                 # Evaluate next batch before train
-                if batch_index % 10 == 0:
-                    train_loss, train_accuracy = sess.run([loss, accuracy], feed_dict_train_eval)
-
-                    feed_dict_train_eval.update({xent_var: train_loss, acc_var: train_accuracy})
-                    summ_train = sess.run(merged_summ_training, feed_dict_train_eval)
-                    train_writer.add_summary(summ_train, step)
-
-                    print('Time: ', str(time.strftime("%Hh%Mm%Ss", time.gmtime((time.time() - start_time)))))
-                    print('Epoch %d. Batch index %d, training accuracy %g' % (epoch, batch_index, train_accuracy*100))
-                    print('Epoch %d. Batch index %d, Loss %g' % (epoch, batch_index, train_loss))
+                # if batch_index % 10 == 0:
+                #     train_loss, train_accuracy = sess.run([loss, accuracy], feed_dict_train_eval)
+                #
+                #     feed_dict_train_eval.update({xent_var: train_loss, acc_var: train_accuracy})
+                #     summ_train = sess.run(merged_summ_training, feed_dict_train_eval)
+                #     train_writer.add_summary(summ_train, step)
+                #
+                #     print('Time: ', str(time.strftime("%Hh%Mm%Ss", time.gmtime((time.time() - start_time)))))
+                #     print('Epoch %d. Batch index %d, training accuracy %g' % (epoch, batch_index, train_accuracy*100))
+                #     print('Epoch %d. Batch index %d, Loss %g' % (epoch, batch_index, train_loss))
 
 
                 # Train model
                 train_step.run(feed_dict_train_dropout)
+            print("Training time per epoch:", time.time() - t)
 
 
             # Evaluate test set frequently
             if epoch % test_eval_freq == 0:
+                t2 = time.time()
+
                 test_accuracy = eval_test_set(step)
+                print("Test time:", time.time() - t2)
                 print('---------------')
                 print('Epoch %d. test accuracy %g' % (epoch, test_accuracy*100))
                 print('---------------\n')

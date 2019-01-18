@@ -25,7 +25,7 @@ print("------------------------")
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 5
+config['patch_size'] = 9
 config['in_channels'] = input.bands
 config['num_classes'] = input.num_classes
 config['kernel_size'] = 3
@@ -33,7 +33,7 @@ config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 100
+config['max_epochs'] = 50
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
@@ -50,7 +50,7 @@ file = open(folder + "resultados.txt", "w+")
 print("Patch size:" + str(config['patch_size']))
 file.write("\n--------------------------------\n")
 file.write("Patch size: "+ str(config['patch_size']) + "\n")
-log_dir = folder + "CNN_Sinbatchnorm/ps" + str(config['patch_size']) + "/"
+log_dir = folder + "resultadosPatch/ps" + str(config['patch_size']) + "/"
 config['log_dir'] = log_dir
 
 a = time.time()

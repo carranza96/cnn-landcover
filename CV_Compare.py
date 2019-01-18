@@ -30,7 +30,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[0]
+selected_img = images[4]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -44,7 +44,7 @@ rotation_oversampling = True
 feature_selection = False
 apply_filter = False
 classifiers = ["RF", "SVM", "1NN", "3NN", "5NN"]
-classifier = classifiers[1]
+classifier = classifiers[0]
 folder = selected_img + "/CV_" + classifier + "/"
 
 if "NN" in classifier:
@@ -118,7 +118,7 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             X_test = X_test.reshape(len(X_test),-1)
 
             if feature_selection:
-                fs = ExtraTreesClassifier(n_estimators=100)
+                fs = ExtraTreesClassifier(n_estimators=200)
                 fs = fs.fit(X_train, y_train)
                 model = SelectFromModel(fs, prefit=True)
                 X_train, X_test = model.transform(X_train), model.transform(X_test)
@@ -154,15 +154,21 @@ for discarded_indices, selected_indices in dataset_reduction.split(X, y):
             elif classifier == "5NN":
                 clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1)
 
+            t1 = time.time()
 
             clf.fit(X_train, y_train)
+            print("Training time", time.time() - t1)
+
 
             t = time.time() - t
             print(t)
             if fold_num == 1:
                 file.write("Time %0.3f\n" %t)
 
+            t2 = time.time()
             y_pred = clf.predict(X_test)
+            print("Test time", time.time() - t2)
+
 
             # train_acc = accuracy_score(y_train, clf.predict(X_train))*100
             train_acc = 0

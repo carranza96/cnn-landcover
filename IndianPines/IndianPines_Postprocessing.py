@@ -10,7 +10,8 @@ from pandas_ml import ConfusionMatrix
 
 input = IndianPines_Input.IndianPines_Input()
 
-img = envi.open('IndianPines/resultados/ps5/SVMps5.hdr', 'IndianPines/resultados/ps5/SVMps5.raw')
+img = envi.open('IndianPines/resultadosPatch/ps3/ps3.hdr', 'IndianPines/resultadosPatch/ps3/ps3.raw')
+patch_size = 9
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
@@ -150,7 +151,7 @@ view = output_image(input, filt_img)
 fig = plt.figure(1)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=1)
-fig.savefig("IndianPines/filt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("IndianPines/resultadosPatch/ps"+str(patch_size)+"/ilt_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 
@@ -159,7 +160,7 @@ view = output_image(input, clean_img)
 fig = plt.figure(2)
 lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
 imshow(view, fignum=2)
-fig.savefig("IndianPines/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("IndianPines/resultadosPatch/ps"+str(patch_size)+"/filt_clean_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 #
-envi.save_image("IndianPines/ip_filtro5.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+envi.save_image("IndianPines/resultadosPatch/ps"+str(patch_size)+"/ip_filtro5.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 #

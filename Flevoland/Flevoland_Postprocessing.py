@@ -6,8 +6,8 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 input = Flevoland_Input.Flevoland_Input()
-img = envi.open('Flevoland/mejor_resultado_ps3/ps3_subido.hdr', 'Flevoland/mejor_resultado_ps3/ps3_subido.raw').load()
-
+img = envi.open('Flevoland/resultados/ps7/ps7.hdr', 'Flevoland/resultados/ps7/ps7.raw').load()
+patch_size= 7
 
 def modal(x):
     return stats.mode(x, axis=None)[0][0]
@@ -41,9 +41,9 @@ for n in range(5):
     fig = plt.figure(n+2)
     lgd = plt.legend(handles=labelPatches, ncol=1, fontsize='small', loc=2, bbox_to_anchor=(1, 1))
     imshow(view, fignum=n+2)
-    fig.savefig("Flevoland/filt5_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
+    fig.savefig("Flevoland/resultados/ps"+str(patch_size)+"filt5_lgd", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 
-envi.save_image("Flevoland/flevoland_filtro5_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
+envi.save_image("Flevoland/resultados/ps"+str(patch_size)+"/flevoland_filtro5_5it.hdr", filt_img, dtype='uint8', force=True, interleave='BSQ', ext='raw')
 

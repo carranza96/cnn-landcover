@@ -1,4 +1,5 @@
 from IndianPines import IndianPines_Input
+from Flevoland import Flevoland_Input
 import Decoder3D as Decoder
 import time
 from collections import Counter
@@ -20,7 +21,7 @@ def make_hparam_string(patch_size):
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = IndianPines_Input.IndianPines_Input()
+# input = IndianPines_Input.IndianPines_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
 print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
@@ -53,7 +54,7 @@ validation_set = False
 
 file = open(folder + "resultados.txt", "w+")
 
-for patch_size in [3]:
+for patch_size in [5]:
 
     print("Patch size:" + str(patch_size))
     config['patch_size'] = patch_size

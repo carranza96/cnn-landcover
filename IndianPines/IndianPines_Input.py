@@ -100,7 +100,7 @@ class IndianPines_Input():
 
 
 
-    def read_data(self, patch_size, conv3d=False):
+    def read_data(self, patch_size, rot_oversampling=False, conv3d=False):
 
         scaler = MinMaxScaler()
         # Scale: array-like, shape [n_samples, n_features]
@@ -137,10 +137,21 @@ class IndianPines_Input():
 
 
 
+
         # Patches shape: [num_examples, height, width, channels]  (10249,3,3,200) (for 2D Convolution)
         # Final processed dataset: X,y
         X, y = np.asarray(patches, dtype=float), np.asarray(labels, dtype=float)
         positions = np.asarray(positions, dtype=[('i',int),('j',int)])
+
+        # For 3D shape must be 5D Tensor
+        # [num_examples, in_depth, in_height, in_width, in_channels(1)]
+        if conv3d:
+            if rot_oversampling:
+                X_, y = self.rotation_oversampling(X, y)
+            X = np.transpose(X, axes=(0, 3, 1, 2))
+            # [num_examples, in_depth, in_height, in_width] Need one more dimension
+            X = np.expand_dims(X, axis=4)
+
         return X, y, positions
 
 

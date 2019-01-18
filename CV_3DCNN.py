@@ -9,10 +9,10 @@ import time
 import numpy as np
 from collections import Counter
 from spectral import imshow, save_rgb
-import CV_Decoder,CV_Postprocessing
+import CV_Postprocessing
 import os
 import pandas as pd
-import CNNTrain_2D
+from Convolution3D import CNNTrain_3D, Decoder3D
 
 
 # Input data
@@ -25,7 +25,7 @@ images_inputs = {"IndianPines": IndianPines_Input.IndianPines_Input(),
                  }
 
 # Select image to test
-selected_img = images[4]
+selected_img = images[2]
 input = images_inputs[selected_img]
 
 print("Image:" + selected_img)
@@ -34,26 +34,28 @@ for patch_size in [5]:
 
     config = {}
     config['patch_size'] = patch_size
-    config['kernel_size'] = 3
-    config['in_channels'] = input.bands
+    config['in_depth'] = input.bands
+    config['in_channels'] = 1
+    config['spectral_kernel_size'] = 3
+    config['spatial_kernel_size'] = 3
     config['num_classes'] = input.num_classes
     config['conv1_channels'] = 32
     config['conv2_channels'] = 64
     config['fc1_units'] = 1024
     config['batch_size'] = 16
-    config['max_epochs'] = 1
+    config['max_epochs'] = 10
     config['train_dropout'] = 0.8
     config['initial_learning_rate'] = 0.01
     config['decaying_lr'] = True
     config['seed'] = None
-    folder = selected_img + "/CV_Patch"+str(patch_size)+"/"
+    folder = selected_img + "/3D_CV_Patch"+str(patch_size)+"/"
     rotation_oversampling = True
     apply_filter = False
 
 
 
     # 5 partitions to the dataset
-    X, y, positions = input.read_data(patch_size)
+    X, y, positions = input.read_data(patch_size, conv3d=True)
     dataset_reduction = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
 
     partition = 1
@@ -111,9 +113,10 @@ for patch_size in [5]:
                 save_rgb(fold_dir + "train.png", img_train, format='png')
                 save_rgb(fold_dir + "test.png", img_test, format='png')
 
-
+                print(X_train.shape)
+                print(X_test.shape)
                 if rotation_oversampling:
-                    X_train, y_train = input.rotation_oversampling(X_train, y_train)
+                    X_train, y_train = input.rotation_oversampling3D(X_train, y_train)
 
                 print("Size training set", len(X_train))
                 print("Size test set", len(X_test))
@@ -132,7 +135,7 @@ for patch_size in [5]:
                 print('Start training')
                 t = time.time()
 
-                save_path, test_acc, _ = CNNTrain_2D.train_model(X_train, y_train, X_test, y_test, config)
+                save_path, test_acc, _ = CNNTrain_3D.train_model(X_train, y_train, X_test, y_test, config)
 
                 t = time.time() - t
                 print(t)
@@ -141,7 +144,7 @@ for patch_size in [5]:
 
                 print("Test accuracy:" + str(test_acc))
 
-                raw, train_acc, test_acc = CV_Decoder.decode_cnn(input, config, train_positions, test_positions, save_path)
+                raw, train_acc, test_acc = Decoder3D.decode(input, config, train_positions, test_positions, save_path)
 
                 print("Train accuracy:" + str(train_acc))
                 print("Test accuracy:" + str(test_acc))
