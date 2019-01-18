@@ -270,6 +270,50 @@ class IndianPines_Input():
 
 
 
+    def rotation_oversampling3D(self, X_train, y_train):
+
+        print("Rotating patches")
+
+        X_train = np.squeeze(X_train, axis=4)
+        X_train = np.transpose(X_train, axes=(0, 2, 3, 1))
+        print(X_train.shape)
+
+        # Split to avoid out of mem error
+        X_split = np.split(X_train, [i * 2000 for i in range(int(len(X_train) / 2000))])
+        y_split = np.split(y_train, [i * 2000 for i in range(int(len(X_train) / 2000))])
+
+        for i in range(len(X_split)):
+
+            tf.reset_default_graph()
+
+            with tf.Graph().as_default():
+                config = tf.ConfigProto()
+                config.gpu_options.allow_growth = True
+                sess = tf.Session(config=config)
+
+                X = X_split[i]  # Your image or batch of images
+                y = y_split[i]
+                # for degree_angle in [45, 90, 135, 180, 225, 270, 315]:
+                for degree_angle in [90, 180, 270]:
+                    radian = degree_angle * math.pi / 180
+                    tf_img = tf.contrib.image.rotate(X, radian)
+                    rotated_img = sess.run(tf_img)
+
+                    X_train = np.append(X_train, rotated_img, axis=0)
+                    y_train = np.append(y_train, y, axis=0)
+
+                sess.close()
+
+        del X_split, y_split
+
+        X_train = np.transpose(X_train, axes=(0, 3, 1, 2))
+        # [num_examples, in_depth, in_height, in_width] Need one more dimension
+        X_train = np.expand_dims(X_train, axis=4)
+
+        return X_train, y_train
+
+
+
     def train_test_images(self, train_positions, test_positions):
         img_train, img_test = np.zeros(shape=(self.height, self.width)), np.zeros(shape=(self.height, self.width))
 

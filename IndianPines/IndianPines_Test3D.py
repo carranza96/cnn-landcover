@@ -1,14 +1,15 @@
-from SanFrancisco import SanFrancisco_Input
-from SanFrancisco import SanFrancisco_Decoder as Decoder
+from IndianPines import IndianPines_Input
+import Decoder
 import time
 from collections import Counter
 import numpy as np
 import CNNTrain_3D
 import spectral.io.envi as envi
 from spectral import imshow
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from sklearn.model_selection import train_test_split
+
 
 
 def make_hparam_string(patch_size):
@@ -19,32 +20,33 @@ def make_hparam_string(patch_size):
 print("------------------------")
 print("Input data")
 print("------------------------")
-input = SanFrancisco_Input.SanFrancisco_Input()
+input = IndianPines_Input.IndianPines_Input()
 print("Training pixels", np.count_nonzero(input.train_data))
+print("Test pixels", np.count_nonzero(input.test_data))
 print("------------------------")
 
 
 # Configurable parameters
 config = {}
-config['patch_size'] = 3
 config['in_depth'] = input.bands
 config['in_channels'] = 1
 config['spectral_kernel_size'] = 3
 config['spatial_kernel_size'] = 3
 config['num_classes'] = input.num_classes
+config['patch_size'] = 5
 config['kernel_size'] = 3
 config['conv1_channels'] = 32
 config['conv2_channels'] = 64
 config['fc1_units'] = 1024
 config['batch_size'] = 16
-config['max_epochs'] = 10
+config['max_epochs'] = 50
 config['train_dropout'] = 0.8
 config['initial_learning_rate'] = 0.01
 config['decaying_lr'] = True
 config['seed'] = None
-folder = 'SanFrancisco/'
+folder = 'IndianPines/'
 oversampling = False
-rotation_oversampling = False
+rotation_oversampling = True
 validation_set = False
 
 
@@ -61,11 +63,7 @@ for patch_size in [5]:
 
     a = time.time()
 
-    X_train, y_train, _ = input.read_data(config['patch_size'],conv3d=True)
-    _, X_test, _, y_test = train_test_split(X_train, y_train, test_size=0.1, random_state=None)
-
-    # X, y = input.read_data(config['patch_size'])
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=None)
+    X_train, y_train, X_test, y_test = input.read_train_test_data(config['patch_size'], conv3d=True)
     #X_test, y_test, X_train, y_train = input.read_data(config['patch_size'])
 
 
@@ -78,7 +76,7 @@ for patch_size in [5]:
         X_train, y_train = input.oversample_data(X_train, y_train, patch_size)
 
     if rotation_oversampling:
-        X_train, y_train = input.rotation_oversampling(X_train, y_train)
+        X_train, y_train = input.rotation_oversampling3D(X_train, y_train)
 
 
 
@@ -110,7 +108,7 @@ for patch_size in [5]:
         for i in range(input.num_classes):
             file.write(str(i+1)+";" + str(dtrain[i]) + ";" + str(dval[i]) + ";" + str(dtest[i]) + "\n")
     #
-        save_path, val_acc,  conf_matrix = CNNTrain_3D.train_model(X_train, y_train, X_val, y_val, config)
+        save_path, val_acc,  conf_matrix = CNNTrain_2D.train_model(X_train, y_train, X_val, y_val, config)
         # save_path, final_test_acc,  conf_matrix = CNNTrain_2D.train_model(X_test, y_test, X_train, y_train, config)
 
         # Clear memory
@@ -132,9 +130,9 @@ for patch_size in [5]:
 
 
 
-    train_acc, test_acc= 0, 0
+
     # Decode result
-    raw = Decoder.decode3D(input, config, save_path)
+    raw, train_acc, test_acc = Decoder.decode3D(input, config, save_path)
 
     print("Train accuracy: ", train_acc)
     file.write("Train accuracy; %.3f" % train_acc + "\n")

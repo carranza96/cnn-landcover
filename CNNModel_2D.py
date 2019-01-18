@@ -47,8 +47,8 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
         x_image = tf.reshape(images, [-1, patch_size, patch_size, in_channels])
 
 
-    with tf.name_scope('bn1'):
-        h_bn1 = batch_norm(x_image, phase_train)
+    # with tf.name_scope('bn1'):
+    #     h_bn1 = batch_norm(x_image, phase_train)
 
     # Convolutional Layer #1
     # Maps the 200 patches to conv1_channels feature maps.
@@ -58,21 +58,21 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
     with tf.name_scope('conv1'):
         W_conv1 = weight_variable([kernel_size, kernel_size, in_channels, conv1_channels])
         b_conv1 = bias_variable([conv1_channels])
-        h_conv1 = tf.nn.relu(conv2d(h_bn1, W_conv1) + b_conv1)
+        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         # variables_histogram(W_conv1, b_conv1, h_conv1)
 
 
 
-    with tf.name_scope('bn2'):
-        h_bn2 = batch_norm(h_conv1, phase_train)
-
+    # with tf.name_scope('bn2'):
+    #     h_bn2 = batch_norm(h_conv1, phase_train)
+    #
 
     # Pooling layer #1
     # Downsamples by 2X.
     # Input Tensor Shape: [batch_size, patch_size, patch_size, conv1_channels]
     # Output Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv1_channels]
     with tf.name_scope('pool1'):
-        h_pool1 = max_pool_2x2(h_bn2)
+        h_pool1 = max_pool_2x2(h_conv1)
 
 
     # with tf.name_scope('bn3'):
@@ -89,15 +89,15 @@ def inference(images, in_channels, patch_size, kernel_size, conv1_channels, conv
         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
     #
-    with tf.name_scope('bn4'):
-        h_bn4 = batch_norm(h_conv2, phase_train)
+    # with tf.name_scope('bn4'):
+    #     h_bn4 = batch_norm(h_conv2, phase_train)
 
 
     # Pooling layer #2
     # Input Tensor Shape: [batch_size, patch_size/2 , patch_size/2 , conv2_channels]
     # Output Tensor Shape: [batch_size, patch_size/4 , patch_size/4 , conv2_channels]
     with tf.name_scope('pool2'):
-        h_pool2 = max_pool_2x2(h_bn4)
+        h_pool2 = max_pool_2x2(h_conv2)
 
 
 
@@ -180,13 +180,10 @@ def loss(logits, labels):
 
   # Calculate the average cross entropy loss across the batch.
   # labels = tf.one_hot(indices=tf.cast(labels, tf.int64), depth=number_of_classes)
-  cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits, name='cross_entropy')
+  cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+  labels=labels, logits=logits, name='cross_entropy')
   # if math.isnan(cross_entropy):
-  #     print("NAN!!!")
-      # cross_entropy= math.log(0.000000000001)
-  # labels_onehot = tf.one_hot(labels, depth=9)
-  # cross_entropy = -tf.reduce_sum(labels_onehot * tf.log(tf.nn.softmax(logits) + 0.1))
-
+  #     cross_entropy= math.log(0.000000000001)
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy_mean')
 
   return cross_entropy_mean
@@ -212,7 +209,6 @@ def training(loss, learning_rate, global_step):
         with tf.control_dependencies(update_ops):
             # Create the gradient descent optimizer with the given learning rate.
             optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-            # optimizer = tf.train.AdamOptimizer(learning_rate)
 
             # Use the optimizer to apply the gradients that minimize the loss
             # (and also increment the global step counter) as a single training step.

@@ -67,8 +67,7 @@ def train_model(X_train, y_train, X_test, y_test, config):
         # Define learning rate
         # Decay once per epoch , using an exponential schedule starting at initial_learning_rate
         if decaying_lr:
-            learning_rate = tf.train.exponential_decay(
-                initial_learning_rate,  # Base learning rate.
+            learning_rate = tf.train.exponential_decay(                initial_learning_rate,  # Base learning rate.
                 global_step,  # Current index into the dataset.
                 num_batches_per_epoch,  # Decay step.
                 0.96,  # Decay rate.

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import CNNModel_2D as CNNModel_2D
+import CNNModel_3D as CNNModel_3D
 import numpy as np
 from spectral import get_rgb
 
@@ -82,7 +82,10 @@ def output_image(input, output):
 def decode3D(input, config, model_ckp):
 
     patch_size = config['patch_size']
-    kernel_size = config['kernel_size']
+    in_depth = config['in_depth']
+    in_channels = config['in_channels']
+    spectral_kernel_size = config['spectral_kernel_size']
+    spatial_kernel_size = config['spatial_kernel_size']
     conv1_channels = config['conv1_channels']
     conv2_channels = config['conv2_channels']
     fc1_units = config['fc1_units']
@@ -92,12 +95,12 @@ def decode3D(input, config, model_ckp):
     with tf.Graph().as_default():
 
         # Create placeholders
-        images_pl, labels_pl, phase_train = CNNModel_2D.placeholder_inputs(patch_size, input.bands)
+        images_pl, labels_pl, phase_train = CNNModel_3D.placeholder_inputs(patch_size, input.bands)
 
         # Build a Graph that computes the logits predictions from the
         # inference model.
-        logits, keep_prob = CNNModel_2D.inference(images_pl, input.bands, patch_size,
-                                                  kernel_size, conv1_channels, conv2_channels,
+        logits, keep_prob = CNNModel_3D.inference(images_pl, in_depth, in_channels, patch_size,
+                                                  spectral_kernel_size, spatial_kernel_size, conv1_channels, conv2_channels,
                                                   fc1_units, input.num_classes, phase_train)
 
         softmax = tf.nn.softmax(logits)
