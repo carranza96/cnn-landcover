@@ -132,10 +132,10 @@ for patch_size in [5]:
 
 
     # Decode result
-    raw, train_acc, test_acc = Decoder.decode3D(input, config, save_path)
+    raw = Decoder.decode3D(input, config, save_path)
 
-    print("Train accuracy: ", train_acc)
-    file.write("Train accuracy; %.3f" % train_acc + "\n")
+    #print("Train accuracy: ", train_acc)
+    #file.write("Train accuracy; %.3f" % train_acc + "\n")
     if validation_set:
         print("Validation accuracy: ", val_acc)
         file.write("Validation accuracy; %.3f" % val_acc + "\n")
